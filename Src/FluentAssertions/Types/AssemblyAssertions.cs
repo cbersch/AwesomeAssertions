@@ -26,6 +26,48 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
     }
 
     /// <summary>
+    /// Asserts that an assembly does not depend directly or indirectly on the specified assembly.
+    /// </summary>
+    /// <param name="assembly">The assembly which should not be referenced directly or indirectly</param>
+    /// <param name="because">
+    /// A formatted phrase as is supported by <see cref="string.Format(string,object[])" /> explaining why the assertion
+    /// is needed. If the phrase does not start with the word <i>because</i>, it is prepended automatically.
+    /// </param>
+    /// <param name="becauseArgs">
+    /// Zero or more objects to format using the placeholders in <paramref name="because" />.
+    /// </param>
+    public AndConstraint<AssemblyAssertions> NotDependOn(Assembly assembly, string because, params string[] becauseArgs)
+    {
+        Guard.ThrowIfArgumentIsNull(assembly);
+
+        string assemblyName = assembly.GetName().Name;
+
+        assertionChain
+           .BecauseOf(because, becauseArgs)
+           .ForCondition(Subject is not null)
+           .FailWith("Expected assembly not to depend on assembly {0}{reason}, but {context:assembly} is <null>.",
+               assemblyName);
+
+        if (assertionChain.Succeeded)
+        {
+            string subjectName = Subject!.GetName().Name;
+
+            IEnumerable<TrackedReference> references = new ReferenceHierarchyBuilder(Subject).Execute();
+            TrackedReference firstMatch = references.FirstOrDefault(x => x.TargetAssemblyName == assemblyName);
+
+            CurrentAssertionChain
+                .BecauseOf(because, becauseArgs)
+                .ForCondition(firstMatch == null)
+                .FailWith("Expected assembly {0} not to depend on assembly {1}{reason}, but we found{2}",
+                    subjectName,
+                    assemblyName,
+                    FormatAssemblyDependency(firstMatch));
+        }
+
+        return new AndConstraint<AssemblyAssertions>(this);
+    }
+
+    /// <summary>
     /// Asserts that an assembly does not reference the specified assembly.
     /// </summary>
     /// <param name="assembly">The assembly which should not be referenced.</param>
@@ -218,6 +260,27 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
 #else
         BitConverter.ToString(bytes).Replace("-", string.Empty, StringComparison.Ordinal);
 #endif
+
+    private static string FormatAssemblyDependency(TrackedReference firstMatch)
+    {
+        if (!firstMatch.ReferencePaths.Any())
+        {
+            return "a direct reference";
+        }
+
+        if (firstMatch.ReferencePaths.Count() == 1)
+        {
+            return $"""
+                a single dependency
+                {FormatDependencyPaths(firstMatch.ReferencePaths)}
+                """;
+        }
+
+        return $"""
+            dependencies
+            {FormatDependencyPaths(firstMatch.ReferencePaths)}
+            """;
+    }
 
     /// <summary>
     /// Returns the type of the subject the assertion applies on.
