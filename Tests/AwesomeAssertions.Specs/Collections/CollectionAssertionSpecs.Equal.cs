@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AwesomeAssertions.Execution;
 using Xunit;
 using Xunit.Sdk;
@@ -13,6 +14,38 @@ public partial class CollectionAssertionSpecs
 {
     public class Equal
     {
+        [Theory]
+        [InlineData(97)]
+        [InlineData(50)]
+        [InlineData(5)]
+        public void Foo(int diffIndex)
+        {
+            // Arrange
+            int[] collection1 = [.. Enumerable.Range(0, 100)];
+            int[] collection2 = [.. Enumerable.Range(0, 100)];
+            collection2[diffIndex] = 27;
+
+            // Act / Assert
+            collection1.Should().Equal(collection2);
+        }
+
+        public record Bar(int Value);
+
+        [Theory]
+        [InlineData(97)]
+        [InlineData(50)]
+        [InlineData(5)]
+        public void Foo2(int diffIndex)
+        {
+            // Arrange
+            Bar[] collection1 = Enumerable.Range(0, 100).Select(x => new Bar(x)).ToArray();
+            Bar[] collection2 = Enumerable.Range(0, 100).Select(x => new Bar(x)).ToArray();
+            collection2[diffIndex] = new(27);
+
+            // Act / Assert
+            collection1.Should().Equal(collection2);
+        }
+
         [Fact]
         public void Should_succeed_when_asserting_collection_is_equal_to_the_same_collection()
         {

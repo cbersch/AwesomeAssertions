@@ -10,9 +10,9 @@ namespace AwesomeAssertions.Common;
 /// </summary>
 internal sealed class Iterator<T> : IEnumerator<T>
 {
-    private const int InitialIndex = -1;
+    private readonly int initialIndex;
     private readonly IEnumerable<T> enumerable;
-    private readonly int? maxItems;
+    private readonly int maxItems;
     private IEnumerator<T> enumerator;
     private T current;
     private T next;
@@ -22,17 +22,18 @@ internal sealed class Iterator<T> : IEnumerator<T>
 
     private bool hasCompleted;
 
-    public Iterator(IEnumerable<T> enumerable, int maxItems = int.MaxValue)
+    public Iterator(IEnumerable<T> enumerable, int maxItems = int.MaxValue, int initialIndex = -1)
     {
         this.enumerable = enumerable;
         this.maxItems = maxItems;
+        this.initialIndex = initialIndex;
 
         Reset();
     }
 
     public void Reset()
     {
-        Index = InitialIndex;
+        Index = -1;
 
         enumerator = enumerable.GetEnumerator();
         hasCurrent = false;
@@ -40,6 +41,25 @@ internal sealed class Iterator<T> : IEnumerator<T>
         hasCompleted = false;
         current = default;
         next = default;
+
+        SkipToInitialIndex();
+    }
+
+    private void SkipToInitialIndex()
+    {
+        if (initialIndex > -1)
+        {
+            while (Index < initialIndex && MoveNext())
+            {
+                // skip to first
+            }
+
+            hasCurrent = false;
+            hasNext = false;
+            hasCompleted = false;
+            current = default;
+            next = default;
+        }
     }
 
     public int Index { get; private set; }
@@ -104,7 +124,7 @@ internal sealed class Iterator<T> : IEnumerator<T>
         return false;
     }
 
-    public bool HasReachedMaxItems => Index == maxItems;
+    public bool HasReachedMaxItems => Index == maxItems + initialIndex + 1;
 
     private void PrefetchNext()
     {
@@ -129,7 +149,7 @@ internal sealed class Iterator<T> : IEnumerator<T>
                 throw new InvalidOperationException($"Please call {nameof(MoveNext)} first");
             }
 
-            return Index == InitialIndex;
+            return Index == initialIndex;
         }
     }
 

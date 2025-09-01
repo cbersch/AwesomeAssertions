@@ -55,6 +55,7 @@ public static class Formatter
         new MultidimensionalArrayFormatter(),
         new DictionaryValueFormatter(),
         new EnumerableValueFormatter(),
+        new EnumerableWithIndexValueFormatter(),
         new EnumValueFormatter(),
         new TypeValueFormatter(),
         new DefaultValueFormatter(),

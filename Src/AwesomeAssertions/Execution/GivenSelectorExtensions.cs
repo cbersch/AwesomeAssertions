@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using AwesomeAssertions.Common;
+using AwesomeAssertions.Formatting;
 
 namespace AwesomeAssertions.Execution;
 
@@ -69,7 +70,7 @@ internal static class GivenSelectorExtensions
             .Given<ICollection<TActual>>(actual => new CollectionWithIndex<TActual>(actual, findIndex(actual, expected)))
             .ForCondition(diff => diff.As<CollectionWithIndex<TActual>>().Index == -1)
             .FailWith("but {0} differs at index {1}.",
-                diff => diff.As<CollectionWithIndex<TActual>>().Items,
+                diff => new EnumerableValue(diff.As<CollectionWithIndex<TActual>>().Items, diff.As<CollectionWithIndex<TActual>>().Index),
                 diff => diff.As<CollectionWithIndex<TActual>>().Index);
     }
 
