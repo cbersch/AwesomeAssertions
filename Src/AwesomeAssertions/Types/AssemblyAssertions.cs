@@ -19,6 +19,8 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
     /// <summary>
     /// Initializes a new instance of the <see cref="AssemblyAssertions" /> class.
     /// </summary>
+    /// <param name="assembly">The subject whose value is being asserted.</param>
+    /// <param name="assertionChain">The current assertion chain</param>
     public AssemblyAssertions(Assembly assembly, AssertionChain assertionChain)
         : base(assembly, assertionChain)
     {
@@ -207,6 +209,114 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
                     .Then
                     .ForCondition(string.Equals(assemblyKey, publicKey, StringComparison.OrdinalIgnoreCase))
                     .FailWith("{reason}, but it has {0} instead.", assemblyKey));
+        }
+
+        return new AndConstraint<AssemblyAssertions>(this);
+    }
+
+    public AndConstraint<AssemblyAssertions> DependOnlyOn(string expected,
+        [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+        return DependOnlyOn(expected, options => options, because, becauseArgs);
+    }
+
+    public AndConstraint<AssemblyAssertions> DependOnlyOn(string[] expected,
+       [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+        return DependOnlyOn(expected, options => options, because, becauseArgs);
+    }
+
+    public AndConstraint<AssemblyAssertions> DependOnlyOn(string expected, Func<AssemblyReferenceOptions, AssemblyReferenceOptions> config,
+        [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+        Guard.ThrowIfArgumentIsNullOrEmpty(expected);
+        Guard.ThrowIfArgumentIsNull(config);
+
+        assertionChain
+            .ForCondition(Subject is not null)
+            .FailWith("Can't check for assembly dependencies if {context:assembly} is <null>.");
+
+        if (assertionChain.Succeeded)
+        {
+            AssemblyReferenceOptions options = config(AssemblyReferenceOptions.Defaults);
+            using AssertionScope scope = new();
+            scope.AddReportable("configuration", options.ToString);
+
+            assertionChain
+                .BecauseOf(because, becauseArgs)
+                .WithExpectation("Expected assembly {0} to only depend on assemblies matching {1}{reason}, ", Subject?.GetName().Name, expected, chain => chain
+                .Given(() => AssemblyReferenceAnalyzer.AnalyzeFromExpected(Subject, expected, options))
+                .ForCondition(unwantedReference => unwantedReference is null)
+                .FailWith("""
+                    but found
+                    {0}
+                    """, unwantedReference => unwantedReference));
+        }
+
+        return new AndConstraint<AssemblyAssertions>(this);
+    }
+
+    public AndConstraint<AssemblyAssertions> DependOnlyOn(string[] expected, Func<AssemblyReferenceOptions, AssemblyReferenceOptions> config,
+        [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+        Guard.ThrowIfArgumentIsNull(expected);
+        Guard.ThrowIfArgumentIsNull(config);
+
+        assertionChain
+            .ForCondition(Subject is not null)
+            .FailWith("Can't check for assembly dependencies if {context:assembly} reference is <null>.");
+
+        if (assertionChain.Succeeded)
+        {
+            AssemblyReferenceOptions options = config(AssemblyReferenceOptions.Defaults);
+            using AssertionScope scope = new();
+            scope.AddReportable("configuration", options.ToString);
+
+            assertionChain
+                .BecauseOf(because, becauseArgs)
+                .WithExpectation("Expected assembly {0} to only depend on assemblies matching any of {1}{reason}, ", Subject?.GetName().Name, expected, chain => chain
+                .Given(() => AssemblyReferenceAnalyzer.AnalyzeFromExpected(Subject, expected, options))
+                .ForCondition(unwantedReference => unwantedReference is null)
+                .FailWith("""
+                    but found
+                    {0}
+                    """, unwantedReference => unwantedReference));
+        }
+
+        return new AndConstraint<AssemblyAssertions>(this);
+    }
+
+    public AndConstraint<AssemblyAssertions> NotDependOn(string unexpected,
+        [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+        return NotDependOn(unexpected, options => options, because, becauseArgs);
+    }
+
+    public AndConstraint<AssemblyAssertions> NotDependOn(string unexpected, Func<AssemblyReferenceOptions, AssemblyReferenceOptions> config,
+        [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
+    {
+        Guard.ThrowIfArgumentIsNullOrEmpty(unexpected);
+        Guard.ThrowIfArgumentIsNull(config);
+
+        assertionChain
+            .ForCondition(Subject is not null)
+            .FailWith("Can't check for assembly dependencies if {context:assembly} is <null>.");
+
+        if (assertionChain.Succeeded)
+        {
+            AssemblyReferenceOptions options = config(AssemblyReferenceOptions.Defaults);
+            using AssertionScope scope = new();
+            scope.AddReportable("configuration", options.ToString);
+
+            assertionChain
+                .BecauseOf(because, becauseArgs)
+                .WithExpectation("Expected assembly {0} not to depend on assemblies matching {1}{reason}, ", Subject?.GetName().Name, unexpected, chain => chain
+                .Given(() => AssemblyReferenceAnalyzer.AnalyzeFromUnexpected(Subject, unexpected, options))
+                .ForCondition(unwantedReference => unwantedReference is null)
+                .FailWith("""
+                    but found
+                    {0}
+                    """, unwantedReference => unwantedReference));
         }
 
         return new AndConstraint<AssemblyAssertions>(this);

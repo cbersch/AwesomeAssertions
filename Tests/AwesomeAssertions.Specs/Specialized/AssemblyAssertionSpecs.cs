@@ -382,6 +382,163 @@ public class AssemblyAssertionSpecs
             signedAssembly.Should().BeSignedWithPublicKey(key).And.NotBeNull();
         }
     }
+
+    public class NotDependOn
+    {
+        [Fact]
+        public void Foo()
+        {
+            // Arrange
+            Assembly subject = Assembly.GetExecutingAssembly();
+
+            // Act
+            Action act = () => subject.Should().NotDependOn("Microsoft.*");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .Which.Message.Should().Be("""
+                    Expected assembly "AwesomeAssertions.Specs" not to depend on assemblies matching "Microsoft.*", but found
+                    AwesomeAssertions.Specs
+                    └─Microsoft.VisualStudio.TestPlatform.ObjectModel
+                      ├─Microsoft.TestPlatform.CoreUtilities
+                      │ ├─Microsoft.TestPlatform.PlatformAbstractions
+                      │ └─Microsoft.Win32.Registry
+                      └─Microsoft.TestPlatform.PlatformAbstractions
+
+
+                    With configuration:
+                    - Excluding system references
+                    - Without includes by wildcards
+                    - Without excludes by wildcards
+
+                    """);
+        }
+
+        [Fact]
+        public void Foo2()
+        {
+            // Arrange
+            Assembly subject = Assembly.GetExecutingAssembly();
+
+            // Act
+            Action act = () => subject.Should().NotDependOn("xunit.*");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .Which.Message.Should().MatchEquivalentOf("""
+                    Expected assembly "AwesomeAssertions.Specs" not to depend on assemblies matching "xunit.*", but found
+                    AwesomeAssertions.Specs
+                    ├─xunit.abstractions
+                    ├─xunit.assert
+                    ├─xunit.core
+                    │ └─xunit.abstractions
+                    ├─xunit.execution.dotnet
+                    │ ├─xunit.abstractions
+                    │ └─xunit.core
+                    │   └─xunit.abstractions
+                    └─Xunit.StaFact
+                      ├─xunit.abstractions
+                      ├─xunit.core
+                      │ └─xunit.abstractions
+                      └─xunit.execution.dotnet
+                        ├─xunit.abstractions
+                        └─xunit.core
+                          └─xunit.abstractions
+                    *
+                    """, options => options);
+        }
+
+        [Fact]
+        public void Foo3()
+        {
+            Assembly subject = Assembly.GetExecutingAssembly();
+
+            // Act
+            Action act = () => subject.Should().NotDependOn("AssemblyA", "we want to test the failure {0}", "message");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                    Expected assembly "AwesomeAssertions.Specs" not to depend on assemblies matching "AssemblyA" because we want to test the failure message, but found
+                    AwesomeAssertions.Specs
+                    └─AssemblyA
+                    *
+                    """);
+        }
+
+        [Fact]
+        public void Foo4()
+        {
+            Assembly subject = Assembly.GetExecutingAssembly();
+
+            // Act
+            Action act = () => subject.Should().NotDependOn("AssemblyB", "failure {0}", "message");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                    Expected assembly "AwesomeAssertions.Specs" not to depend on assemblies matching "AssemblyB" because failure message, but found
+                    AwesomeAssertions.Specs
+                    ├─AssemblyA
+                    │ └─AssemblyB
+                    └─AssemblyB
+                    *
+                    """);
+        }
+
+        [Fact]
+        public void Foo5()
+        {
+            Assembly subject = Assembly.GetExecutingAssembly();
+
+            // Act
+            Action act = () => subject.Should().NotDependOn("AssemblyB");
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                    *"AwesomeAssertions.Specs" not to depend on assemblies matching "AssemblyB",*
+                    AwesomeAssertions.Specs
+                    ├─AssemblyA
+                    │ └─AssemblyB
+                    └─AssemblyB
+
+                    *
+                    """);
+        }
+
+        [Fact]
+        public void Foo6()
+        {
+            Assembly subject = Assembly.GetExecutingAssembly();
+
+            // Act
+            Action act = () => subject.Should().NotDependOn("AssemblyB", o => o.Excluding("Assembly*"));
+
+            // Assert
+            act.Should().NotThrow<XunitException>();
+        }
+
+        [Fact]
+        public void Foo7()
+        {
+            Assembly subject = Assembly.GetExecutingAssembly();
+
+            // Act
+            Action act = () => subject.Should().NotDependOn("AssemblyB", o => o.Excluding("AssemblyA"));
+
+            // Assert
+            act.Should().Throw<XunitException>()
+                .WithMessage("""
+                *not to depend on assemblies matching "AssemblyB"*
+                AwesomeAssertions.Specs
+                └─AssemblyB
+                *
+                - Excluding wildcard "AssemblyA"
+                *
+                """);
+        }
+    }
 }
 
 [DummyClass("name", true)]

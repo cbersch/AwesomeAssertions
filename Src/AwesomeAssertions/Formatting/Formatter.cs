@@ -57,6 +57,7 @@ public static class Formatter
         new EnumerableValueFormatter(),
         new EnumValueFormatter(),
         new TypeValueFormatter(),
+        new AssemblyReferenceValueFormatter(),
         new DefaultValueFormatter(),
     ];
 

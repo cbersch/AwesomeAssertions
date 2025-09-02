@@ -2346,8 +2346,31 @@ namespace AwesomeAssertions.Types
         public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> BeSignedWithPublicKey(string publicKey, string because = "", params object[] becauseArgs) { }
         public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> BeUnsigned(string because = "", params object[] becauseArgs) { }
         public AwesomeAssertions.AndWhichConstraint<AwesomeAssertions.Types.AssemblyAssertions, System.Type> DefineType(string @namespace, string name, string because = "", params object[] becauseArgs) { }
+        public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> NotDependOn(string unexpected, string because = "", params object[] becauseArgs) { }
+        public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> NotDependOn(string unexpected, System.Func<AwesomeAssertions.Types.AssemblyReferenceOptions, AwesomeAssertions.Types.AssemblyReferenceOptions> config, string because = "", params object[] becauseArgs) { }
         public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> NotReference(System.Reflection.Assembly assembly, string because = "", params object[] becauseArgs) { }
+        public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> OnlyDependOn(string expected, string because = "", params object[] becauseArgs) { }
+        public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> OnlyDependOn(string[] expected, string because = "", params object[] becauseArgs) { }
+        public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> OnlyDependOn(string expected, System.Func<AwesomeAssertions.Types.AssemblyReferenceOptions, AwesomeAssertions.Types.AssemblyReferenceOptions> config, string because = "", params object[] becauseArgs) { }
+        public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> OnlyDependOn(string[] expected, System.Func<AwesomeAssertions.Types.AssemblyReferenceOptions, AwesomeAssertions.Types.AssemblyReferenceOptions> config, string because = "", params object[] becauseArgs) { }
         public AwesomeAssertions.AndConstraint<AwesomeAssertions.Types.AssemblyAssertions> Reference(System.Reflection.Assembly assembly, string because = "", params object[] becauseArgs) { }
+    }
+    [System.Diagnostics.DebuggerDisplay("{Name.Name} ({References.Count})")]
+    public sealed class AssemblyReference
+    {
+        public AssemblyReference(System.Reflection.AssemblyName name, System.Collections.Generic.IReadOnlyList<AwesomeAssertions.Types.AssemblyReference> references) { }
+        public System.Reflection.AssemblyName Name { get; }
+        public System.Collections.Generic.IReadOnlyList<AwesomeAssertions.Types.AssemblyReference> References { get; }
+    }
+    public sealed class AssemblyReferenceOptions
+    {
+        public System.Collections.Generic.IEnumerable<string> ExcludeWildcards { get; }
+        public bool IncludeSystemReferences { get; }
+        public System.Collections.Generic.IEnumerable<string> IncludeWildcards { get; }
+        public static AwesomeAssertions.Types.AssemblyReferenceOptions Defaults { get; }
+        public AwesomeAssertions.Types.AssemblyReferenceOptions Excluding(params string[] wildcards) { }
+        public AwesomeAssertions.Types.AssemblyReferenceOptions Including(params string[] wildcards) { }
+        public AwesomeAssertions.Types.AssemblyReferenceOptions IncludingSystemReferences() { }
     }
     public class ConstructorInfoAssertions : AwesomeAssertions.Types.MethodBaseAssertions<System.Reflection.ConstructorInfo, AwesomeAssertions.Types.ConstructorInfoAssertions>
     {
