@@ -45,6 +45,30 @@ public class GivenSelector<T>
         return this;
     }
 
+    public GivenSelector<T> NotSatisfy(Action<T> failingAssert)
+    {
+        Guard.ThrowIfArgumentIsNull(failingAssert);
+
+        if (assertionChain.Succeeded)
+        {
+            assertionChain.NotSatisfy(() => failingAssert(selector));
+        }
+
+        return this;
+    }
+
+    public GivenSelector<T> Satisfy(Action<T> assert)
+    {
+        Guard.ThrowIfArgumentIsNull(assert);
+
+        if (assertionChain.Succeeded)
+        {
+            assertionChain.Satisfy(() => assert(selector));
+        }
+
+        return this;
+    }
+
     public GivenSelector<T> ForConstraint(OccurrenceConstraint constraint, Func<T, int> func)
     {
         Guard.ThrowIfArgumentIsNull(func);

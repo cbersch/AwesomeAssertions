@@ -329,9 +329,6 @@ namespace AwesomeAssertions
             where TInnerException : System.Exception { }
         public static System.Threading.Tasks.Task<AwesomeAssertions.Specialized.ExceptionAssertions<System.Exception>> WithInnerExceptionExactly<TException>(this System.Threading.Tasks.Task<AwesomeAssertions.Specialized.ExceptionAssertions<TException>> task, System.Type innerException, [System.Diagnostics.CodeAnalysis.StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
             where TException : System.Exception { }
-        public static System.Threading.Tasks.Task<AwesomeAssertions.Specialized.ExceptionAssertions<TInnerException>> WithInnerExceptionExactly<TException, TInnerException>(this System.Threading.Tasks.Task<AwesomeAssertions.Specialized.ExceptionAssertions<TException>> task, [System.Diagnostics.CodeAnalysis.StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
-            where TException : System.Exception
-            where TInnerException : System.Exception { }
         public static System.Threading.Tasks.Task<AwesomeAssertions.Specialized.ExceptionAssertions<TException>> WithMessage<TException>(this System.Threading.Tasks.Task<AwesomeAssertions.Specialized.ExceptionAssertions<TException>> task, string expectedWildcardPattern, [System.Diagnostics.CodeAnalysis.StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
             where TException : System.Exception { }
         public static AwesomeAssertions.Specialized.ExceptionAssertions<TException> WithParameterName<TException>(this AwesomeAssertions.Specialized.ExceptionAssertions<TException> parent, string paramName, [System.Diagnostics.CodeAnalysis.StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)

@@ -1952,18 +1952,9 @@ public class GenericCollectionAssertions<TCollection, T, TAssertions> : Referenc
                 .FailWith("Expected {context:collection} not to be equivalent{reason}, but found <null>.");
         }
 
-        string[] failures;
-
-        using (var scope = new AssertionScope())
-        {
-            BeEquivalentTo(unexpected, config);
-
-            failures = scope.Discard();
-        }
-
         assertionChain
-            .ForCondition(failures.Length > 0)
             .BecauseOf(because, becauseArgs)
+            .NotSatisfy(() => BeEquivalentTo(unexpected, config))
             .FailWith("Expected {context:collection} {0} not to be equivalent to collection {1}{reason}.", Subject,
                 unexpected);
 

@@ -149,6 +149,36 @@ public sealed class AssertionChain
         return this;
     }
 
+    public AssertionChain Satisfy(Action assert)
+    {
+        Guard.ThrowIfArgumentIsNull(assert);
+
+        if (PreviousAssertionSucceeded)
+        {
+            using AssertionScope scope = new();
+            assert();
+
+            succeeded = scope.Discard().Length == 0;
+        }
+
+        return this;
+    }
+
+    public AssertionChain NotSatisfy(Action failingAssert)
+    {
+        Guard.ThrowIfArgumentIsNull(failingAssert);
+
+        if (PreviousAssertionSucceeded)
+        {
+            using AssertionScope scope = new();
+            failingAssert();
+
+            succeeded = scope.Discard().Length > 0;
+        }
+
+        return this;
+    }
+
     public AssertionChain ForCondition(bool condition)
     {
         if (PreviousAssertionSucceeded)
