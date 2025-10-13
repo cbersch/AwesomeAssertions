@@ -16,7 +16,7 @@ internal class StringStartStrategy : IStringComparisonStrategy
         this.predicateDescription = predicateDescription;
     }
 
-    public string ExpectationDescription => $"Expected {{context:string}} to {predicateDescription} ";
+    private string ExpectationDescription => $"Expected {{context:string}} to {predicateDescription}";
 
     public void ValidateAgainstMismatch(AssertionChain assertionChain, string subject, string expected)
     {

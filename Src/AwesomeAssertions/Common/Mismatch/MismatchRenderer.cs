@@ -40,6 +40,11 @@ internal static class MismatchRenderer
     /// </summary>
     private static string CreateLocationDescription(string subject, int indexOfMismatch, string defaultMessage)
     {
+        if (subject is null)
+        {
+            return defaultMessage;
+        }
+
         var matchingString = subject[..indexOfMismatch];
         int lineNumber = matchingString.Count(c => c == '\n');
 
@@ -106,6 +111,12 @@ internal static class MismatchRenderer
     /// <remarks>Ellipses are added for truncated ends of the <paramref name="span"/>.</remarks>
     private static void AppendPrefixAndEscapedPhraseToShowWithEllipsisAndSuffix(MismatchSpan span)
     {
+        if (span.IsNull)
+        {
+            span.Prepend($"{Indentation} ");
+            return;
+        }
+
         var startTruncated = span.StartTruncated;
         var endTruncated = span.EndTruncated;
 

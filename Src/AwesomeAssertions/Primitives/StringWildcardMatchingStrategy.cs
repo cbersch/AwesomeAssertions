@@ -6,10 +6,18 @@ using AwesomeAssertions.Execution;
 
 namespace AwesomeAssertions.Primitives;
 
-internal class StringWildcardMatchingStrategy : IStringComparisonStrategy
+internal class StringWildcardMatchingStrategy : StringBaseStrategy, IStringComparisonStrategy
 {
+    private string ExpectationDescription =>
+        $"{(Negate ? "Did not expect" : "Expected")} {{context:string}} {(IgnoreCase ? "to match the equivalent of" : "to match")}";
+
     public void ValidateAgainstMismatch(AssertionChain assertionChain, string subject, string expected)
     {
+        if (!ValidateAgainstNulls(assertionChain, subject, expected, ExpectationDescription))
+        {
+            return;
+        }
+
         bool isMatch = IsMatch(subject, expected);
 
         if (isMatch != Negate)
@@ -17,14 +25,30 @@ internal class StringWildcardMatchingStrategy : IStringComparisonStrategy
             return;
         }
 
-        if (Negate)
+        assertionChain.FailWith(
+            GetFailureDescription(subject, expected),
+            expected, subject);
+    }
+
+    private string GetFailureDescription(string subject, string expected)
+    {
+        string butDescription = Negate ? "matches" : "does not";
+        if (subject.IsLongOrMultiline() || expected.IsLongOrMultiline())
         {
-            assertionChain.FailWith($"{ExpectationDescription}but {{1}} matches.", expected, subject);
+            return $$"""
+                {{ExpectationDescription}}
+
+                  {0},
+
+                {reason}, but
+
+                  {1}
+
+                {{butDescription}}.
+                """;
         }
-        else
-        {
-            assertionChain.FailWith($"{ExpectationDescription}but {{1}} does not.", expected, subject);
-        }
+
+        return $"{ExpectationDescription} {{0}}{{reason}}, but {{1}} {butDescription}.";
     }
 
     private bool IsMatch(string subject, string expected)
@@ -61,22 +85,6 @@ internal class StringWildcardMatchingStrategy : IStringComparisonStrategy
         }
 
         return input;
-    }
-
-    public string ExpectationDescription
-    {
-        get
-        {
-            var builder = new StringBuilder();
-
-            builder
-                .Append(Negate ? "Did not expect " : "Expected ")
-                .Append("{context:string}")
-                .Append(IgnoreCase ? " to match the equivalent of" : " to match")
-                .Append(" {0}{reason}, ");
-
-            return builder.ToString();
-        }
     }
 
     /// <summary>

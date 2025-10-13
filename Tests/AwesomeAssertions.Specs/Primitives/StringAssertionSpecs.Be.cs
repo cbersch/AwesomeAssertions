@@ -111,7 +111,13 @@ public partial class StringAssertionSpecs
             Action act = () => "ABC".Should().Be("");
 
             // Assert
-            act.Should().Throw<XunitException>().WithMessage("*index 0*");
+            act.Should().Throw<XunitException>().Which.Message.Should().Be("""
+                Expected string to be the same string, but they differ at index 0:
+                   ↓ (actual)
+                  "ABC"
+                  ""
+                   ↑ (expected).
+                """);
         }
 
         [Fact]
@@ -121,7 +127,13 @@ public partial class StringAssertionSpecs
             Action act = () => "".Should().Be("ABC");
 
             // Assert
-            act.Should().Throw<XunitException>().WithMessage("*index 0*");
+            act.Should().Throw<XunitException>().Which.Message.Should().Be("""
+                Expected string to be the same string, but they differ at index 0:
+                   ↓ (actual)
+                  ""
+                  "ABC"
+                   ↑ (expected).
+                """);
         }
 
         [Fact]
@@ -131,8 +143,13 @@ public partial class StringAssertionSpecs
             Action act = () => "AB".Should().Be(null);
 
             // Assert
-            act.Should().Throw<XunitException>().WithMessage(
-                "Expected string to be <null>, but found \"AB\".");
+            act.Should().Throw<XunitException>().Which.Message.Should().Be("""
+                Expected string to be the same string, but they differ at index 0:
+                   ↓ (actual)
+                  "AB"
+                   <null>
+                   ↑ (expected).
+                """);
         }
 
         [Fact]
@@ -154,8 +171,13 @@ public partial class StringAssertionSpecs
             Action act = () => someString.Should().Be("ABC");
 
             // Assert
-            act.Should().Throw<XunitException>().WithMessage(
-                "Expected someString to be \"ABC\", but found <null>.");
+            act.Should().Throw<XunitException>().Which.Message.Should().Be("""
+                Expected someString to be the same string, but they differ at index 0:
+                   ↓ (actual)
+                   <null>
+                  "ABC"
+                   ↑ (expected).
+                """);
         }
 
         [Fact]
@@ -514,6 +536,21 @@ public partial class StringAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>().WithMessage(
                 "Expected someString not to be <null> because we don't like null.");
+        }
+
+        [Fact]
+        public void When_both_subject_and_expected_are_null_it_should_throw()
+        {
+            // Arrange
+            string actualString = null;
+            string expectedString = null;
+
+            // Act
+            Action act = () => actualString.Should().NotBe(expectedString, "failure {0}", "message");
+
+            // Act / Assert
+            act.Should().Throw<XunitException>().WithMessage(
+                "*not to be <null>*failure message*");
         }
     }
 }

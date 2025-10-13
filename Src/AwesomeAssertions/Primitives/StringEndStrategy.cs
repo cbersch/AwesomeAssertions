@@ -16,7 +16,7 @@ internal class StringEndStrategy : IStringComparisonStrategy
         this.predicateDescription = predicateDescription;
     }
 
-    public string ExpectationDescription => $"Expected {{context:string}} to {predicateDescription} ";
+    private string ExpectationDescription => $"Expected {{context:string}} to {predicateDescription}";
 
     public void ValidateAgainstMismatch(AssertionChain assertionChain, string subject, string expected)
     {
@@ -54,6 +54,11 @@ internal class StringEndStrategy : IStringComparisonStrategy
         string expected,
         IEqualityComparer<string> comparer)
     {
+        if (subject is null || expected is null)
+        {
+            return ((subject?.Length ?? 0) - 1, (expected?.Length ?? 0) - 1);
+        }
+
         // We can't have a mismatch if the expectation is empty.
         if (expected.Length is 0 || comparer.Equals(subject, expected))
         {

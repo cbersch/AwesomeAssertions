@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 namespace AwesomeAssertions.Common.Mismatch;
@@ -28,6 +28,8 @@ internal sealed class MismatchSpan
     /// </summary>
     public int Length => Text.Length;
 
+    public bool IsNull { get; }
+
     /// <summary>
     /// Gets the visible text.
     /// </summary>
@@ -35,8 +37,9 @@ internal sealed class MismatchSpan
 
     public MismatchSpan(string text, int mismatchIndex)
     {
-        Text = text;
+        Text = text ?? "<null>";
         MismatchIndex = mismatchIndex;
+        IsNull = text is null;
     }
 
     /// <summary>
@@ -44,7 +47,12 @@ internal sealed class MismatchSpan
     /// </summary>
     public void Truncate()
     {
-        var range = GetTruncationRange(Text, MismatchIndex);
+        if (IsNull)
+        {
+            return;
+        }
+
+        Range range = GetTruncationRange(Text, MismatchIndex);
         Truncate(range);
     }
 
@@ -53,6 +61,11 @@ internal sealed class MismatchSpan
     /// </summary>
     public void EscapeNewLines()
     {
+        if (IsNull)
+        {
+            return;
+        }
+
         var indexOffset = Text
             .Take(MismatchIndex)
             .Count(c => c is '\n' or '\r');

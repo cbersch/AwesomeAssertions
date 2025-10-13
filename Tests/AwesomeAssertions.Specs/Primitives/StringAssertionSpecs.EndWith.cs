@@ -117,11 +117,7 @@ public partial class StringAssertionSpecs
             string someString = null;
 
             // Act
-            Action act = () =>
-            {
-                using var _ = new AssertionScope();
-                someString.Should().EndWith("ABC");
-            };
+            Action act = () => someString.Should().EndWith("ABCDEFGHI");
 
             // Assert
             act.Should().Throw<XunitException>().WithMessage(

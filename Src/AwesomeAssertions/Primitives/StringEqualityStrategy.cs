@@ -20,12 +20,17 @@ internal class StringEqualityStrategy : IStringComparisonStrategy
 
     public void ValidateAgainstMismatch(AssertionChain assertionChain, string subject, string expected)
     {
-        if (comparer.Equals(subject, expected))
+        if (subject is null && expected is null)
         {
             return;
         }
 
-        var indexOfMismatch = subject.IndexOfFirstMismatch(expected, comparer);
+        if (subject is not null && expected is not null && comparer.Equals(subject, expected))
+        {
+            return;
+        }
+
+        int indexOfMismatch = subject.IndexOfFirstMismatch(expected, comparer);
 
         var failureMessage = MismatchRenderer.CreateFailureMessage(new MismatchRendererOptions
         {

@@ -15,8 +15,6 @@ internal class StringContainsStrategy : IStringComparisonStrategy
         this.occurrenceConstraint = occurrenceConstraint;
     }
 
-    public string ExpectationDescription => "Expected {context:string} {0} to contain the equivalent of ";
-
     public void ValidateAgainstMismatch(AssertionChain assertionChain, string subject, string expected)
     {
         int actual = subject.CountSubstring(expected, comparer);
@@ -24,7 +22,27 @@ internal class StringContainsStrategy : IStringComparisonStrategy
         assertionChain
             .ForConstraint(occurrenceConstraint, actual)
             .FailWith(
-                $"{ExpectationDescription}{{1}} {{expectedOccurrence}}{{reason}}, but found it {actual.Times()}.",
+                GetFailureDescription(subject, expected, actual),
                 subject, expected);
+    }
+
+    private static string GetFailureDescription(string subject, string expected, int actualOccurrences)
+    {
+        if (subject.IsLongOrMultiline() || expected.IsLongOrMultiline())
+        {
+            return $$"""
+            Expected {context:string}
+
+              {0}
+
+            to contain the equivalent of
+
+              {1}
+
+            {expectedOccurrence}{reason}, but found it {{actualOccurrences.Times()}}.
+            """;
+        }
+
+        return $"Expected {{context:string}} {{0}} to contain the equivalent of {{1}} {{expectedOccurrence}}{{reason}}, but found it {actualOccurrences.Times()}.";
     }
 }

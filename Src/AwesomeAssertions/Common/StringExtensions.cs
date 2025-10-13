@@ -14,6 +14,11 @@ internal static class StringExtensions
     /// </summary>
     public static int IndexOfFirstMismatch(this string value, string expected, IEqualityComparer<string> comparer)
     {
+        if (value is null || expected is null)
+        {
+            return 0;
+        }
+
         for (int index = 0; index < value.Length; index++)
         {
             if (index >= expected.Length || !comparer.Equals(value[index..(index + 1)], expected[index..(index + 1)]))
@@ -138,6 +143,11 @@ internal static class StringExtensions
     /// </summary>
     public static bool IsLongOrMultiline(this string value)
     {
+        if (value is null)
+        {
+            return false;
+        }
+
         const int humanReadableLength = 8;
         return value.Length > humanReadableLength || value.Contains(Environment.NewLine, StringComparison.Ordinal);
     }
