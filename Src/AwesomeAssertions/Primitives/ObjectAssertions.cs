@@ -321,12 +321,7 @@ public class ObjectAssertions<TSubject, TAssertions> : ReferenceTypeAssertions<T
             TraceWriter = options.TraceWriter
         };
 
-        var comparands = new Comparands
-        {
-            Subject = Subject,
-            Expectation = expectation,
-            CompileTimeType = typeof(TExpectation),
-        };
+        var comparands = new Comparands(Subject, expectation, typeof(TExpectation), typeof(TSubject));
 
         new EquivalencyValidator().AssertEquality(comparands, context);
 

@@ -137,12 +137,7 @@ public class ComparableTypeAssertions<T, TAssertions> : ReferenceTypeAssertions<
             TraceWriter = options.TraceWriter
         };
 
-        var comparands = new Comparands
-        {
-            Subject = Subject,
-            Expectation = expectation,
-            CompileTimeType = typeof(TExpectation),
-        };
+        var comparands = new Comparands(Subject, expectation, typeof(TExpectation), typeof(T));
 
         new EquivalencyValidator().AssertEquality(comparands, context);
 

@@ -243,12 +243,7 @@ public class GenericDictionaryAssertions<TCollection, TKey, TValue, TAssertions>
                 TraceWriter = options.TraceWriter
             };
 
-        var comparands = new Comparands
-        {
-            Subject = Subject,
-            Expectation = expectation,
-            CompileTimeType = typeof(TExpectation),
-        };
+        var comparands = new Comparands(Subject, expectation, typeof(TExpectation), typeof(TCollection));
 
         new EquivalencyValidator().AssertEquality(comparands, context);
 

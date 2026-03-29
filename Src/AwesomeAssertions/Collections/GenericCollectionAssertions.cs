@@ -406,12 +406,7 @@ public class GenericCollectionAssertions<TCollection, T, TAssertions> : Referenc
                 TraceWriter = options.TraceWriter,
             };
 
-        var comparands = new Comparands
-        {
-            Subject = Subject,
-            Expectation = expectation,
-            CompileTimeType = typeof(IEnumerable<TExpectation>),
-        };
+        var comparands = new Comparands(Subject, expectation, typeof(IEnumerable<TExpectation>), typeof(TCollection));
 
         new EquivalencyValidator().AssertEquality(comparands, context);
 
@@ -1064,12 +1059,7 @@ public class GenericCollectionAssertions<TCollection, T, TAssertions> : Referenc
                         TraceWriter = options.TraceWriter
                     };
 
-                var comparands = new Comparands
-                {
-                    Subject = actualItem,
-                    Expectation = expectation,
-                    CompileTimeType = typeof(TExpectation),
-                };
+                var comparands = new Comparands(actualItem, expectation, typeof(TExpectation), typeof(T));
 
                 new EquivalencyValidator().AssertEquality(comparands, context);
 
@@ -2629,12 +2619,7 @@ public class GenericCollectionAssertions<TCollection, T, TAssertions> : Referenc
                             TraceWriter = options.TraceWriter
                         };
 
-                    var comparands = new Comparands
-                    {
-                        Subject = actualItem,
-                        Expectation = unexpected,
-                        CompileTimeType = typeof(TExpectation),
-                    };
+                    var comparands = new Comparands(actualItem, unexpected, typeof(TExpectation), typeof(T));
 
                     new EquivalencyValidator().AssertEquality(comparands, context);
 

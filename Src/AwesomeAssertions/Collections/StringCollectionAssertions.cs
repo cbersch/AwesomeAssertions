@@ -154,12 +154,7 @@ public class StringCollectionAssertions<TCollection, TAssertions> : GenericColle
                 TraceWriter = options.TraceWriter
             };
 
-        var comparands = new Comparands
-        {
-            Subject = Subject,
-            Expectation = expectation,
-            CompileTimeType = typeof(IEnumerable<string>),
-        };
+        var comparands = new Comparands(Subject, expectation, typeof(IEnumerable<string>), typeof(TCollection));
 
         new EquivalencyValidator().AssertEquality(comparands, context);
 

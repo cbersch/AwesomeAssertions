@@ -40,7 +40,7 @@ public class StructuralEqualityEquivalencyStep : IEquivalencyStep
         }
         else
         {
-            IMember[] selectedMembers = GetMembersFromExpectation(context.CurrentNode, comparands, context.Options).ToArray();
+            IMember[] selectedMembers = GetExpectationMembers(context.CurrentNode, comparands, context.Options).ToArray();
 
             if (context.CurrentNode.IsRoot && selectedMembers.Length == 0)
             {
@@ -49,16 +49,38 @@ public class StructuralEqualityEquivalencyStep : IEquivalencyStep
                     "Please specify some members to include in the comparison or choose a more meaningful assertion.");
             }
 
+            List<IMember> matchingMembers = new(selectedMembers.Length);
             foreach (IMember selectedMember in selectedMembers)
             {
-                AssertMemberEquality(comparands, context, valueChildNodes, selectedMember, context.Options);
+                IMember matchingMember = AssertMemberEquality(comparands, context, valueChildNodes, selectedMember, context.Options);
+                if (matchingMember is not null)
+                {
+                    matchingMembers.Add(matchingMember);
+                }
+            }
+
+            if (context.Options.ThrowOnUnexpectedMembers)
+            {
+                AssertNoUnexpectedMembers(matchingMembers, context.CurrentNode, comparands, context.Options);
             }
         }
 
         return EquivalencyResult.EquivalencyProven;
     }
 
-    private static void AssertMemberEquality(Comparands comparands, IEquivalencyValidationContext context,
+    private static void AssertNoUnexpectedMembers(List<IMember> matchingMembers, INode currentNode, Comparands comparands, IEquivalencyOptions options)
+    {
+        foreach (var subjectMember in GetSubjectMembers(currentNode, comparands, options))
+        {
+            if (!matchingMembers.Exists(x => x.Subject.Name == subjectMember.Subject.Name))
+            {
+                AssertionChain.GetOrCreate()
+                    .FailWith($"Subject has {subjectMember.Subject} which the expectation does not have");
+            }
+        }
+    }
+
+    private static IMember AssertMemberEquality(Comparands comparands, IEquivalencyValidationContext context,
         IValidateChildNodeEquivalency parent, IMember selectedMember, IEquivalencyOptions options)
     {
         var assertionChain = AssertionChain.GetOrCreate().For(context);
@@ -66,12 +88,10 @@ public class StructuralEqualityEquivalencyStep : IEquivalencyStep
         IMember matchingMember = FindMatchFor(selectedMember, context.CurrentNode, comparands.Subject, options, assertionChain);
         if (matchingMember is not null)
         {
-            var nestedComparands = new Comparands
-            {
-                Subject = matchingMember.GetValue(comparands.Subject),
-                Expectation = selectedMember.GetValue(comparands.Expectation),
-                CompileTimeType = selectedMember.Type
-            };
+            var nestedComparands = new Comparands(
+                matchingMember.GetValue(comparands.Subject),
+                selectedMember.GetValue(comparands.Expectation),
+                selectedMember.Type);
 
             // In case the matching process selected a different member on the subject,
             // adjust the current member so that assertion failures report the proper name.
@@ -79,6 +99,8 @@ public class StructuralEqualityEquivalencyStep : IEquivalencyStep
 
             parent.AssertEquivalencyOf(nestedComparands, context.AsNestedMember(selectedMember));
         }
+
+        return matchingMember;
     }
 
     private static IMember FindMatchFor(IMember selectedMember, INode currentNode, object subject,
@@ -98,7 +120,7 @@ public class StructuralEqualityEquivalencyStep : IEquivalencyStep
         return query.FirstOrDefault();
     }
 
-    private static IEnumerable<IMember> GetMembersFromExpectation(INode currentNode, Comparands comparands,
+    private static IEnumerable<IMember> GetExpectationMembers(INode currentNode, Comparands comparands,
         IEquivalencyOptions options)
     {
         IEnumerable<IMember> members = [];
@@ -107,6 +129,20 @@ public class StructuralEqualityEquivalencyStep : IEquivalencyStep
         {
             members = rule.SelectMembers(currentNode, members,
                 new MemberSelectionContext(comparands.CompileTimeType, comparands.RuntimeType, options));
+        }
+
+        return members;
+    }
+
+    private static IEnumerable<IMember> GetSubjectMembers(INode currentNode, Comparands comparands,
+        IEquivalencyOptions options)
+    {
+        IEnumerable<IMember> members = [];
+
+        foreach (IMemberSelectionRule rule in options.SelectionRules)
+        {
+            members = rule.SelectMembers(currentNode, members,
+                new MemberSelectionContext(comparands.SubjectCompileTimeType, comparands.SubjectRuntimeType, options));
         }
 
         return members;

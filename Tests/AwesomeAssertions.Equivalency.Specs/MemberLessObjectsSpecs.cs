@@ -114,4 +114,43 @@ public class MemberLessObjectsSpecs
 
         subject.Should().BeEquivalentTo(expectation, options => options.ThrowingOnMissingMembers());
     }
+
+    [Fact]
+    public void When_throwing_on_missing_members_and_there_is_an_additional_property_on_subject_should_not_throw2()
+    {
+        // Arrange
+        var subject = new { Version = 2, Age = 36, Additional = new { Foo = 12, Bar = "hallo" } };
+
+        var expectation = new { Version = 2, Age = 36, Additional = new { Foo = 12 } };
+
+        // Act / Assert
+        subject.Should().BeEquivalentTo(expectation,
+            options => options.ThrowingOnMissingMembers());
+    }
+
+    [Fact]
+    public void When_throwing_on_unexpected_members_and_there_is_an_additional_property_on_subject_should_throw()
+    {
+        // Arrange
+        var subject = new { Version = 2, Age = 36, Additional = 13 };
+
+        var expectation = new { Version = 2, Age = 36 };
+
+        // Act / Assert
+        subject.Should().BeEquivalentTo(expectation,
+            options => options.ThrowingOnUnexpectedMembers());
+    }
+
+    [Fact]
+    public void When_throwing_on_unexpected_members_and_there_is_an_additional_property_on_subject_should_throw2()
+    {
+        // Arrange
+        var subject = new { Version = 2, Age = 36, Additional = new { Foo = 12, Bar = "hallo" } };
+
+        var expectation = new { Version = 2, Age = 36, Additional = new { Foo = 12 } };
+
+        // Act / Assert
+        subject.Should().BeEquivalentTo(expectation,
+            options => options.ThrowingOnUnexpectedMembers());
+    }
 }

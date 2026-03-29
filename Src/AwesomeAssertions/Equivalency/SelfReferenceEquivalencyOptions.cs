@@ -108,6 +108,7 @@ public abstract class SelfReferenceEquivalencyOptions<TSelf> : IEquivalencyOptio
 
         RemoveSelectionRule<AllPropertiesSelectionRule>();
         RemoveSelectionRule<AllFieldsSelectionRule>();
+        ThrowOnUnexpectedMembers = defaults.ThrowOnUnexpectedMembers;
     }
 
     /// <summary>
@@ -194,6 +195,8 @@ public abstract class SelfReferenceEquivalencyOptions<TSelf> : IEquivalencyOptio
     /// <see langword="null"/> when this has not been explicitly configured.
     /// </summary>
     public bool? CompareRecordsByValue => equalityStrategyProvider.CompareRecordsByValue;
+
+    public bool ThrowOnUnexpectedMembers { get; private set; }
 
     EqualityStrategy IEquivalencyOptions.GetEqualityStrategy(Type type)
         => equalityStrategyProvider.GetEqualityStrategy(type);
@@ -436,6 +439,15 @@ public abstract class SelfReferenceEquivalencyOptions<TSelf> : IEquivalencyOptio
     {
         matchingRules.RemoveAll(x => x is TryMatchByNameRule);
         matchingRules.Add(new MustMatchByNameRule());
+        return (TSelf)this;
+    }
+
+    /// <summary>
+    /// Requires the subject to only have members which are also available on the expectaction and equally named.
+    /// </summary>
+    public TSelf ThrowingOnUnexpectedMembers()
+    {
+        ThrowOnUnexpectedMembers = true;
         return (TSelf)this;
     }
 

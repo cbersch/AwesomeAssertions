@@ -121,4 +121,6 @@ public interface IEquivalencyOptions
     /// Enabling this option will replace all occurrences of <c>\r\n</c> and <c>\r</c> with <c>\n</c> in the strings before comparing them.
     /// </remarks>
     bool IgnoreNewlineStyle { get; }
+
+    bool ThrowOnUnexpectedMembers { get; }
 }

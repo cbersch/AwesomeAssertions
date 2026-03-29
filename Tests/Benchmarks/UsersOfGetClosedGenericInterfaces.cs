@@ -89,6 +89,8 @@ public class UsersOfGetClosedGenericInterfaces
         public bool IgnoreCase => throw new NotImplementedException();
 
         public bool IgnoreNewlineStyle => throw new NotImplementedException();
+
+        public bool ThrowOnUnexpectedMembers => throw new NotImplementedException();
     }
 
     [Params(typeof(DBNull), typeof(bool), typeof(char), typeof(sbyte), typeof(byte), typeof(short), typeof(ushort),
@@ -164,7 +166,7 @@ public class UsersOfGetClosedGenericInterfaces
     {
         for (int i = 0; i < values.Length; i++)
         {
-            dictionaryStep.Handle(new Comparands(values[i], values[0], typeof(object)), context, null);
+            dictionaryStep.Handle(new Comparands(values[i], values[0]), context, null);
         }
     }
 
@@ -173,7 +175,7 @@ public class UsersOfGetClosedGenericInterfaces
     {
         for (int i = 0; i < values.Length; i++)
         {
-            enumerableStep.Handle(new Comparands(values[i], values[0], typeof(object)), context, null);
+            enumerableStep.Handle(new Comparands(values[i], values[0]), context, null);
         }
     }
 }

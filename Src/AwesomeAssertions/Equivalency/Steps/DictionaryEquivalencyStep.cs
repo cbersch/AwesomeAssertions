@@ -32,7 +32,7 @@ public class DictionaryEquivalencyStep : EquivalencyStep<IDictionary>
                     context.Tracer.WriteLine(member =>
                         Invariant($"Recursing into dictionary item {key} at {member.Expectation}"));
 
-                    nestedValidator.AssertEquivalencyOf(new Comparands(subject[key], expectation[key], typeof(object)), context.AsDictionaryItem<object, IDictionary>(key));
+                    nestedValidator.AssertEquivalencyOf(new Comparands(subject[key], expectation[key]), context.AsDictionaryItem<object, IDictionary>(key));
                 }
                 else
                 {

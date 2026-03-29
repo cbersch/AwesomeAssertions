@@ -193,7 +193,7 @@ public class GenericDictionaryEquivalencyStep : IEquivalencyStep
                         // Run the child assertion without affecting the current context
                         using (new AssertionScope())
                         {
-                            var nestedComparands = new Comparands(subject[key], expectation[key], typeof(TExpectedValue));
+                            var nestedComparands = new Comparands(subject[key], expectation[key], typeof(TExpectedValue), typeof(TSubjectValue));
 
                             parent.AssertEquivalencyOf(nestedComparands, context.AsDictionaryItem<TExpectedKey, TExpectedValue>(key));
                         }

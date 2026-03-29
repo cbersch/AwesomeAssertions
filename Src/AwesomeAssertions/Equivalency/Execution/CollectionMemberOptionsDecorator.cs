@@ -82,4 +82,6 @@ internal class CollectionMemberOptionsDecorator : IEquivalencyOptions
     public bool IgnoreNewlineStyle => inner.IgnoreNewlineStyle;
 
     public ITraceWriter TraceWriter => inner.TraceWriter;
+
+    public bool ThrowOnUnexpectedMembers => inner.ThrowOnUnexpectedMembers;
 }

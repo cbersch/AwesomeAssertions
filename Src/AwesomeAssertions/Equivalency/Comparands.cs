@@ -10,7 +10,8 @@ namespace AwesomeAssertions.Equivalency;
 /// </summary>
 public class Comparands
 {
-    private Type compileTimeType;
+    private readonly Type expectationCompileTimeType;
+    private readonly Type subjectCompileTimeType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Comparands"/> class.
@@ -24,10 +25,12 @@ public class Comparands
     /// </summary>
     /// <param name="subject">The value of the subject object graph.</param>
     /// <param name="expectation">The value of the expected object graph.</param>
-    /// <param name="compileTimeType">The declared (compile-time) type of the <paramref name="expectation"/>.</param>
-    public Comparands(object subject, object expectation, Type compileTimeType)
+    /// <param name="expectationCompileTimeType">The declared (compile-time) type of the <paramref name="expectation"/>.</param>
+    /// <param name="subjectCompileTimeType">The declared (compile-time) type of the <paramref name="subject"/>.</param>
+    public Comparands(object subject, object expectation, Type expectationCompileTimeType = null, Type subjectCompileTimeType = null)
     {
-        this.compileTimeType = compileTimeType;
+        this.expectationCompileTimeType = expectationCompileTimeType ?? typeof(object);
+        this.subjectCompileTimeType = subjectCompileTimeType ?? typeof(object);
         Subject = subject;
         Expectation = expectation;
     }
@@ -40,7 +43,7 @@ public class Comparands
     /// <summary>
     /// Gets the value of the expected object graph.
     /// </summary>
-    public object Expectation { get; set; }
+    public object Expectation { get; }
 
     /// <summary>
     /// Gets or sets the compile-time type of the <see cref="Expectation"/>, falling back to the <see cref="RuntimeType"/>
@@ -50,28 +53,31 @@ public class Comparands
     {
         get
         {
-            return compileTimeType != typeof(object) || Expectation is null ? compileTimeType : RuntimeType;
+            return expectationCompileTimeType != typeof(object) || Expectation is null ? expectationCompileTimeType : RuntimeType;
         }
+    }
 
-        // SMELL: Do we really need this? Can we replace it by making Comparands generic or take a constructor parameter?
-        set => compileTimeType = value;
+    /// <summary>
+    /// Gets or sets the compile-time type of the <see cref="Subject"/>, falling back to the <see cref="SubjectRuntimeType"/>
+    /// when the declared type is <see cref="object"/> and a subject value is available.
+    /// </summary>
+    public Type SubjectCompileTimeType
+    {
+        get
+        {
+            return subjectCompileTimeType != typeof(object) || Subject is null ? subjectCompileTimeType : SubjectRuntimeType;
+        }
     }
 
     /// <summary>
     /// Gets the run-time type of the current expectation object.
     /// </summary>
-    public Type RuntimeType
-    {
-        get
-        {
-            if (Expectation is not null)
-            {
-                return Expectation.GetType();
-            }
+    public Type RuntimeType => Expectation?.GetType() ?? CompileTimeType;
 
-            return CompileTimeType;
-        }
-    }
+    /// <summary>
+    /// Gets the run-time type of the current subject object.
+    /// </summary>
+    public Type SubjectRuntimeType => Subject?.GetType() ?? SubjectCompileTimeType;
 
     /// <summary>
     /// Returns either the run-time or compile-time type of the expectation based on the options provided by the caller.

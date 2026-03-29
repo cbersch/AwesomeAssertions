@@ -36,7 +36,7 @@ internal class MultiDimensionalArrayEquivalencyStep : IEquivalencyStep
 
                 IEquivalencyValidationContext itemContext = context.AsCollectionItem<object>(listOfIndices);
 
-                valueChildNodes.AssertEquivalencyOf(new Comparands(subject, expectation, typeof(object)),
+                valueChildNodes.AssertEquivalencyOf(new Comparands(subject, expectation),
                     itemContext);
             }
             while (digit.Increment());

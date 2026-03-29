@@ -286,11 +286,7 @@ public class StringComparisonSpecs
     public void When_stringifying_a_validation_context_it_should_ignore_culture()
     {
         // Arrange
-        var comparands = new Comparands
-        {
-            Subject = 1.234,
-            Expectation = 5.678
-        };
+        var comparands = new Comparands(1.234, 5.678);
 
         // Act
         var str = comparands.ToString();
