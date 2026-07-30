@@ -38,13 +38,12 @@ internal static class TypeReflector
             or "System.Reflection.Emit.InternalAssemblyBuilder";
     }
 
+    [RequiresUnreferencedCode("GetExportedTypes uses Assembly.GetExportedTypes() which requires metadata")]
     private static IEnumerable<Type> GetExportedTypes(Assembly assembly)
     {
         try
         {
-#pragma warning disable IL2026 // Assembly.GetExportedTypes requires unreferenced code; called from [RequiresUnreferencedCode] method
             return assembly.GetExportedTypes();
-#pragma warning restore IL2026
         }
         catch (ReflectionTypeLoadException ex)
         {
