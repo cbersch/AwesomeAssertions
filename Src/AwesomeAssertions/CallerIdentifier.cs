@@ -30,7 +30,6 @@ public static class CallerIdentifier
     /// <returns>
     /// The identified caller expression, or <see langword="null"/> when it could not be determined.
     /// </returns>
-    [RequiresUnreferencedCode("Caller identification uses StackFrame.GetMethod() which requires metadata")]
     public static string DetermineCallerIdentity()
     {
 #if NET6_0_OR_GREATER
