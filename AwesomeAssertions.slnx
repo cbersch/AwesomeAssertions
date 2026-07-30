@@ -88,6 +88,12 @@
       <BuildType Solution="CI|*" Project="Debug" />
     </Project>
   </Folder>
+  <Folder Name="/AOT/">
+    <Project Path="Tests/AwesomeAssertions.Aot.Specs/AwesomeAssertions.Aot.Specs.csproj">
+      <BuildType Solution="CI|*" Project="Debug" />
+      <Build Solution="CI|*" Project="false" />
+    </Project>
+  </Folder>
   <Project Path="Build/_build.csproj">
     <BuildType Solution="CI|*" Project="Release" />
     <Build Project="false" />

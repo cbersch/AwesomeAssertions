@@ -27,7 +27,9 @@ public static class ObjectAssertionsExtensions
     /// Zero or more objects to format using the placeholders in <paramref name="because" />.
     /// </param>
     [return: NotNull]
-    [RequiresUnreferencedCode("DataContractSerializer uses reflection and cannot be statically analyzed")]    [RequiresDynamicCode("DataContractSerializer requires dynamic code generation")]    public static AndConstraint<ObjectAssertions> BeDataContractSerializable(this ObjectAssertions assertions,
+    [RequiresUnreferencedCode("DataContractSerializer uses reflection and cannot be statically analyzed")]
+    [RequiresDynamicCode("DataContractSerializer requires dynamic code generation")]
+    public static AndConstraint<ObjectAssertions> BeDataContractSerializable(this ObjectAssertions assertions,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         return BeDataContractSerializable<object>(assertions, options => options, because, becauseArgs);

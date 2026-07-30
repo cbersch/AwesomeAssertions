@@ -39,7 +39,10 @@ internal abstract class LateBoundTestFramework : ITestFramework
             }
 #endif
             Assembly? assembly = FindExceptionAssembly();
+
+#pragma warning disable IL2026 // Assembly.GetType requires unreferenced code; checked for availability
             Type? exceptionType = assembly?.GetType(ExceptionFullName);
+#pragma warning restore IL2026
 
             exceptionFactory = exceptionType is not null
     #pragma warning disable IL2072 // exceptionType from Assembly.GetType() does not carry PublicConstructors annotation but it was found by name and is expected to have a matching constructor

@@ -30,6 +30,7 @@ public static class CallerIdentifier
     /// <returns>
     /// The identified caller expression, or <see langword="null"/> when it could not be determined.
     /// </returns>
+    [RequiresUnreferencedCode("Caller identification uses StackFrame.GetMethod() which requires metadata")]
     public static string DetermineCallerIdentity()
     {
 #if NET6_0_OR_GREATER
@@ -69,6 +70,7 @@ public static class CallerIdentifier
 
                 Logger(frame.ToString());
 
+#pragma warning disable IL2026 // StackFrame.GetMethod requires unreferenced code, but caller checked RuntimeFeature
                 if (frame.GetMethod() is not null
                     && !IsDynamic(frame)
                     && !IsDotNet(frame)
@@ -78,6 +80,7 @@ public static class CallerIdentifier
                     caller = ExtractVariableNameFrom(frame);
                     break;
                 }
+#pragma warning restore IL2026
             }
         }
         catch (Exception e)
@@ -92,7 +95,10 @@ public static class CallerIdentifier
     private sealed class NoOpDisposable : IDisposable
     {
         public static readonly NoOpDisposable Instance = new();
-        public void Dispose() { }
+
+        public void Dispose()
+        {
+        }
     }
 
     private sealed class StackFrameReference : IDisposable
@@ -171,7 +177,9 @@ public static class CallerIdentifier
 
     private static bool IsCustomAssertion(StackFrame frame)
     {
+#pragma warning disable IL2026 // StackFrame.GetMethod requires unreferenced code; called from [RequiresUnreferencedCode] method
         MethodBase getMethod = frame.GetMethod();
+#pragma warning restore IL2026
 
         if (getMethod is not null)
         {
@@ -198,17 +206,23 @@ public static class CallerIdentifier
 
     private static bool IsDynamic(StackFrame frame)
     {
+#pragma warning disable IL2026 // StackFrame.GetMethod requires unreferenced code; called from [RequiresUnreferencedCode] method
         return frame.GetMethod() is { DeclaringType: null };
+#pragma warning restore IL2026
     }
 
     private static bool IsCurrentAssembly(StackFrame frame)
     {
+#pragma warning disable IL2026 // StackFrame.GetMethod requires unreferenced code; called from [RequiresUnreferencedCode] method
         return frame.GetMethod()?.DeclaringType?.Assembly == typeof(CallerIdentifier).Assembly;
+#pragma warning restore IL2026
     }
 
     private static bool IsDotNet(StackFrame frame)
     {
+#pragma warning disable IL2026 // StackFrame.GetMethod requires unreferenced code; called from [RequiresUnreferencedCode] method
         var frameNamespace = frame.GetMethod()?.DeclaringType?.Namespace;
+#pragma warning restore IL2026
         const StringComparison comparisonType = StringComparison.OrdinalIgnoreCase;
 
         return frameNamespace?.StartsWith("system.", comparisonType) == true ||
@@ -217,7 +231,9 @@ public static class CallerIdentifier
 
     private static bool IsCompilerServices(StackFrame frame)
     {
+#pragma warning disable IL2026 // StackFrame.GetMethod requires unreferenced code; called from [RequiresUnreferencedCode] method
         return frame.GetMethod()?.DeclaringType?.Namespace is "System.Runtime.CompilerServices";
+#pragma warning restore IL2026
     }
 
     private static string ExtractVariableNameFrom(StackFrame frame)

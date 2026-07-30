@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -93,8 +94,10 @@ public sealed class AssertionChain
             return assertionChain;
         }
 
+#pragma warning disable IL2026 // CallerIdentifier.DetermineCallerIdentity requires unreferenced code; assertion execution depends on caller identification
         return new AssertionChain(() => AssertionScope.Current,
             () => AwesomeAssertions.CallerIdentifier.DetermineCallerIdentity());
+#pragma warning restore IL2026
     }
 
     /// <summary>

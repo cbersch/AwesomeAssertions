@@ -43,7 +43,9 @@ internal sealed class EqualityStrategyProvider
     {
         // As the valueFactory parameter captures instance members,
         // be aware if the cache must be cleared on mutating the members.
+#pragma warning disable IL2026 // GetEqualityStrategyForType requires unreferenced code; equivalency unavoidable depends on reflection
         return typeCache.GetOrAdd(type, GetEqualityStrategyForType);
+#pragma warning restore IL2026
     }
 
     [RequiresUnreferencedCode("Equivalency uses reflection to compare types")]

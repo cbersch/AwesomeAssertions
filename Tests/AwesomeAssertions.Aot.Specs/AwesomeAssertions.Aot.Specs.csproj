@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>AwesomeAssertions.Aot.Specs</RootNamespace>
+    <AssemblyName>AwesomeAssertions.Aot.Specs</AssemblyName>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Src\AwesomeAssertions.snk</AssemblyOriginatorKeyFile>
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn),IDE0052,1573,1591,1712,CS8002,CS7022</NoWarn>
+    <DebugType>embedded</DebugType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Disable test SDK auto-generated Program.cs since we have our own entry point -->
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Src\AwesomeAssertions\AwesomeAssertions.csproj" />
+    <ProjectReference Include="..\AssemblyA\AssemblyA.csproj" />
+    <ProjectReference Include="..\AssemblyB\AssemblyB.csproj" />
+    <ProjectReference Include="..\ExampleExtensions\ExampleExtensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="JetBrains.Annotations" Version="2026.2.0" />
+  </ItemGroup>
+
+  <!-- Link test source files from AwesomeAssertions.Specs -->
+  <ItemGroup>
+    <!-- Include core test directories that work in AOT -->
+    <Compile Include="../AwesomeAssertions.Specs/AndWhichConstraintSpecs.cs" />
+    <Compile Include="../AwesomeAssertions.Specs/AssertionExtensionsSpecs.cs" />
+    <Compile Include="../AwesomeAssertions.Specs/Common/**/*.cs" />
+    <Compile Include="../AwesomeAssertions.Specs/Collections/**/*.cs" />
+    <!-- Exclude problematic test files -->
+    <Compile Remove="../AwesomeAssertions.Specs/Common/CallerIdentifierSpecs.cs" />
+    <Compile Remove="../AwesomeAssertions.Specs/Collections/**/UIFactsDefinition.cs" />
+    <!-- Exclude test SDK Program files to avoid conflicts -->
+    <Compile Remove="**/*Microsoft.NET.Test.Sdk.Program.cs" />
+  </ItemGroup>
+
+  <!-- Exclude Program.cs from linked files, we have our own -->
+  <ItemGroup>
+    <Compile Remove="../AwesomeAssertions.Specs/Program.cs" />
+  </ItemGroup>
+
+</Project>

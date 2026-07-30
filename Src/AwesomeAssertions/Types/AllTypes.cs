@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace AwesomeAssertions.Types;
@@ -18,8 +19,11 @@ public static class AllTypes
     /// specified <paramref name="assembly"/>.
     /// </summary>
     /// <param name="assembly">The assembly from which to select the types.</param>
+    [RequiresUnreferencedCode("Assembly.GetTypes requires unreferenced code")]
     public static TypeSelector From(Assembly assembly)
     {
+#pragma warning disable IL2026 // Types() requires unreferenced code, but caller is marked with [RequiresUnreferencedCode]
         return assembly.Types();
+#pragma warning restore IL2026
     }
 }

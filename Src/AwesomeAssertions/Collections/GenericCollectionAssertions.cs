@@ -397,6 +397,7 @@ public class GenericCollectionAssertions<TCollection, T, TAssertions> : Referenc
         EquivalencyOptions<IEnumerable<TExpectation>> options =
             config(AssertionConfiguration.Current.Equivalency.CloneDefaults<TExpectation>()).AsCollection();
 
+#pragma warning disable IL2026 // CallerIdentifier.DetermineCallerIdentity requires unreferenced code; assertion execution depends on caller identification
         var context =
             new EquivalencyValidationContext(
                 Node.From<IEnumerable<TExpectation>>(() => CallerIdentifier.DetermineCallerIdentity()),
@@ -405,6 +406,7 @@ public class GenericCollectionAssertions<TCollection, T, TAssertions> : Referenc
                 Reason = new Reason(because, becauseArgs),
                 TraceWriter = options.TraceWriter,
             };
+#pragma warning restore IL2026
 
         var comparands = new Comparands
         {

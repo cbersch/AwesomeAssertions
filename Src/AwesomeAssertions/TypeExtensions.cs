@@ -18,9 +18,12 @@ public static class TypeExtensions
     /// <summary>
     /// Returns the types that are visible outside the specified <see cref="Assembly"/>.
     /// </summary>
+    [RequiresUnreferencedCode("Assembly.GetTypes requires unreferenced code")]
     public static TypeSelector Types(this Assembly assembly)
     {
+#pragma warning disable IL2026 // Assembly.GetTypes requires unreferenced code, but caller is marked with [RequiresUnreferencedCode]
         return new TypeSelector(assembly.GetTypes());
+#pragma warning restore IL2026
     }
 
     /// <summary>

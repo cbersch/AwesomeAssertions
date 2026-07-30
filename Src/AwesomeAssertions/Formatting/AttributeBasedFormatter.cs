@@ -83,19 +83,19 @@ public class AttributeBasedFormatter : IValueFormatter
 
     private static Dictionary<Type, MethodInfo> FindCustomFormatters()
     {
+#pragma warning disable IL2026, IL2067 // GetAllTypesFromAppDomain and custom attribute-based formatters require unreferenced code;
+                                       // this code path will silently produce no results if trimmed
         var query =
-#pragma warning disable IL2067 // custom attribute-based formatters are not supported in trimmed/AOT builds;
-                               // this code path will silently produce no results if trimmed
             from type in TypeReflector.GetAllTypesFromAppDomain(Applicable)
             where type is not null
             from method in GetFormatterMethods(type)
-#pragma warning restore IL2067
             where method.IsStatic
             where method.ReturnType == typeof(void)
             where method.IsDecoratedWithOrInherit<ValueFormatterAttribute>()
             let methodParameters = method.GetParameters()
             where methodParameters.Length == 2
             select new { Type = methodParameters[0].ParameterType, Method = method }
+#pragma warning restore IL2026, IL2067
             into formatter
             group formatter by formatter.Type
             into formatterGroup

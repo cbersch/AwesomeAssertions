@@ -93,12 +93,14 @@ public static class AssertionEngine
 
         try
         {
+#pragma warning disable IL2026 // Assembly.GetReferencedAssemblies requires unreferenced code; best-effort attempt to find initializers
             attributes = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .Where(assembly => assembly != currentAssembly && !assembly.IsDynamic && !IsFramework(assembly))
                 .Where(a => a.GetReferencedAssemblies().Any(r => r.FullName == currentAssemblyName.FullName))
                 .SelectMany(a => a.GetCustomAttributes<AssertionEngineInitializerAttribute>())
                 .ToArray();
+#pragma warning restore IL2026
         }
         catch
         {

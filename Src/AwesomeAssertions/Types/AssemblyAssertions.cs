@@ -38,6 +38,7 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
     [return: NotNull]
+    [RequiresUnreferencedCode("Assembly.GetReferencedAssemblies requires unreferenced code")]
     public AndConstraint<AssemblyAssertions> NotReference(Assembly assembly,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
@@ -55,7 +56,9 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
         {
             var subjectName = Subject!.GetName().Name;
 
+#pragma warning disable IL2026 // Assembly.GetReferencedAssemblies requires unreferenced code, but method is marked with [RequiresUnreferencedCode]
             IEnumerable<string> references = Subject.GetReferencedAssemblies().Select(x => x.Name);
+#pragma warning restore IL2026
 
             assertionChain
                 .BecauseOf(because, becauseArgs)
@@ -79,6 +82,7 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="assembly"/> is <see langword="null"/>.</exception>
     [return: NotNull]
+    [RequiresUnreferencedCode("Assembly.GetReferencedAssemblies requires unreferenced code")]
     public AndConstraint<AssemblyAssertions> Reference(Assembly assembly,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
@@ -95,7 +99,9 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
         {
             var subjectName = Subject!.GetName().Name;
 
+#pragma warning disable IL2026 // Assembly.GetReferencedAssemblies requires unreferenced code, but method is marked with [RequiresUnreferencedCode]
             IEnumerable<string> references = Subject.GetReferencedAssemblies().Select(x => x.Name);
+#pragma warning restore IL2026
 
             assertionChain
                 .BecauseOf(because, becauseArgs)
@@ -121,6 +127,7 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
     /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException"><paramref name="name"/> is empty.</exception>
     [return: NotNull]
+    [RequiresUnreferencedCode("Assembly.GetTypes requires unreferenced code")]
     public AndWhichConstraint<AssemblyAssertions, Type> DefineType(string @namespace, string name,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
@@ -136,7 +143,9 @@ public class AssemblyAssertions : ReferenceTypeAssertions<Assembly, AssemblyAsse
 
         if (assertionChain.Succeeded)
         {
+#pragma warning disable IL2026 // Assembly.GetTypes requires unreferenced code, but method is marked with [RequiresUnreferencedCode]
             foundType = Subject!.GetTypes().SingleOrDefault(t => t.Namespace == @namespace && t.Name == name);
+#pragma warning restore IL2026
 
             assertionChain
                 .ForCondition(foundType is not null)
