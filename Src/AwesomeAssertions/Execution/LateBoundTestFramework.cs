@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+
 #if NET6_0_OR_GREATER
 using System.Runtime.Loader;
 #endif
@@ -30,11 +32,19 @@ internal abstract class LateBoundTestFramework : ITestFramework
     {
         get
         {
+#if NET6_0_OR_GREATER
+            if (!RuntimeFeature.IsDynamicCodeSupported)
+            {
+                return false; // Assembly.GetType() requires unreferenced code
+            }
+#endif
             Assembly? assembly = FindExceptionAssembly();
             Type? exceptionType = assembly?.GetType(ExceptionFullName);
 
             exceptionFactory = exceptionType is not null
+    #pragma warning disable IL2072 // exceptionType from Assembly.GetType() does not carry PublicConstructors annotation but it was found by name and is expected to have a matching constructor
                 ? message => (Exception)Activator.CreateInstance(exceptionType, message)!
+    #pragma warning restore IL2072
                 : _ => throw new InvalidOperationException($"{GetType().Name} is not available");
 
             return exceptionType is not null;
@@ -49,9 +59,9 @@ internal abstract class LateBoundTestFramework : ITestFramework
     {
 #if NET6_0_OR_GREATER
         // In some constellations a test framework assembly might have been loaded more than once. Make sure we get the correct one:
-        // AppDomain.GetAssemblies: Gets the assemblies that have been loaded into 
+        // AppDomain.GetAssemblies: Gets the assemblies that have been loaded into
         // the execution context of this application domain.
-        // And in the case of NUnit4.Mtp.Specs this returns nunit.framework twice, with the first one 
+        // And in the case of NUnit4.Mtp.Specs this returns nunit.framework twice, with the first one
         // being the wrong assembly, which is a different one than used for running the tests.
         //
         // So we are looking for the nunit.framework assembly which is used during test execution,

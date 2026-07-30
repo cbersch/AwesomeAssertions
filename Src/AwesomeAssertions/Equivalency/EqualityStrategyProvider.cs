@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using AwesomeAssertions.Common;
@@ -42,36 +43,40 @@ internal sealed class EqualityStrategyProvider
     {
         // As the valueFactory parameter captures instance members,
         // be aware if the cache must be cleared on mutating the members.
-        return typeCache.GetOrAdd(type, typeKey =>
-        {
-            if (!typeKey.IsPrimitive && referenceTypes.Count > 0 && referenceTypes.Exists(t => typeKey.IsSameOrInherits(t)))
-            {
-                return EqualityStrategy.ForceMembers;
-            }
-            else if (valueTypes.Count > 0 && valueTypes.Exists(t => typeKey.IsSameOrInherits(t)))
-            {
-                return EqualityStrategy.ForceEquals;
-            }
-            else if (!typeKey.IsPrimitive && referenceTypes.Count > 0 &&
-                     referenceTypes.Exists(t => typeKey.IsAssignableToOpenGeneric(t)))
-            {
-                return EqualityStrategy.ForceMembers;
-            }
-            else if (valueTypes.Count > 0 && valueTypes.Exists(t => typeKey.IsAssignableToOpenGeneric(t)))
-            {
-                return EqualityStrategy.ForceEquals;
-            }
-            else if ((compareRecordsByValue.HasValue || defaultStrategy is null) && typeKey.IsRecord())
-            {
-                return compareRecordsByValue is true ? EqualityStrategy.ForceEquals : EqualityStrategy.ForceMembers;
-            }
-            else if (defaultStrategy is not null)
-            {
-                return defaultStrategy(typeKey);
-            }
+        return typeCache.GetOrAdd(type, GetEqualityStrategyForType);
+    }
 
-            return typeKey.HasValueSemantics() ? EqualityStrategy.Equals : EqualityStrategy.Members;
-        });
+    [RequiresUnreferencedCode("Equivalency uses reflection to compare types")]
+    private EqualityStrategy GetEqualityStrategyForType(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type typeKey)
+    {
+        if (!typeKey.IsPrimitive && referenceTypes.Count > 0 && referenceTypes.Exists(t => typeKey.IsSameOrInherits(t)))
+        {
+            return EqualityStrategy.ForceMembers;
+        }
+        else if (valueTypes.Count > 0 && valueTypes.Exists(t => typeKey.IsSameOrInherits(t)))
+        {
+            return EqualityStrategy.ForceEquals;
+        }
+        else if (!typeKey.IsPrimitive && referenceTypes.Count > 0 &&
+                 referenceTypes.Exists(t => typeKey.IsAssignableToOpenGeneric(t)))
+        {
+            return EqualityStrategy.ForceMembers;
+        }
+        else if (valueTypes.Count > 0 && valueTypes.Exists(t => typeKey.IsAssignableToOpenGeneric(t)))
+        {
+            return EqualityStrategy.ForceEquals;
+        }
+        else if ((compareRecordsByValue.HasValue || defaultStrategy is null) && typeKey.IsRecord())
+        {
+            return compareRecordsByValue is true ? EqualityStrategy.ForceEquals : EqualityStrategy.ForceMembers;
+        }
+        else if (defaultStrategy is not null)
+        {
+            return defaultStrategy(typeKey);
+        }
+
+        return typeKey.HasValueSemantics() ? EqualityStrategy.Equals : EqualityStrategy.Members;
     }
 
     public bool AddReferenceType(Type type)

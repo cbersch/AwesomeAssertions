@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -86,19 +87,22 @@ internal sealed class DictionaryInterfaceInfo
 
     private static DictionaryInterfaceInfo[] GetDictionaryInterfacesFrom(Type target)
     {
-        return Cache.GetOrAdd(target, static key =>
-        {
-            if (Type.GetTypeCode(key) != TypeCode.Object)
-            {
-                return [];
-            }
+        return Cache.GetOrAdd(target, GetDictionaryInterfacesFromKey);
+    }
 
-            return key
-                .GetClosedGenericInterfaces(typeof(IDictionary<,>))
-                .Select(@interface => @interface.GetGenericArguments())
-                .Select(arguments => new DictionaryInterfaceInfo(arguments[0], arguments[1]))
-                .ToArray();
-        });
+    private static DictionaryInterfaceInfo[] GetDictionaryInterfacesFromKey(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type key)
+    {
+        if (Type.GetTypeCode(key) != TypeCode.Object)
+        {
+            return [];
+        }
+
+        return key
+            .GetClosedGenericInterfaces(typeof(IDictionary<,>))
+            .Select(@interface => @interface.GetGenericArguments())
+            .Select(arguments => new DictionaryInterfaceInfo(arguments[0], arguments[1]))
+            .ToArray();
     }
 
     /// <summary>
@@ -107,6 +111,7 @@ internal sealed class DictionaryInterfaceInfo
     /// <returns>
     /// <see langword="true"/> if the conversion succeeded or <see langword="false"/> otherwise.
     /// </returns>
+    [RequiresDynamicCode("MakeGenericMethod requires dynamic code generation")]
     public object ConvertFrom(object convertable)
     {
         Type[] enumerables = convertable.GetType().GetClosedGenericInterfaces(typeof(IEnumerable<>));

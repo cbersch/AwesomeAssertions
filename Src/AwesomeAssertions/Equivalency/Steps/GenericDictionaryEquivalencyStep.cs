@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Execution;
@@ -21,6 +22,8 @@ public class GenericDictionaryEquivalencyStep : IEquivalencyStep
 #pragma warning restore SA1110
 
     /// <inheritdoc />
+#pragma warning disable IL3051, IL2046 // Interface IEquivalencyStep.Handle cannot have RequiresDynamicCode without affecting all other implementations
+    [RequiresDynamicCode("MakeGenericMethod requires dynamic code generation")]
     public EquivalencyResult Handle(Comparands comparands, IEquivalencyValidationContext context,
         IValidateChildNodeEquivalency valueChildNodes)
     {
@@ -73,7 +76,9 @@ public class GenericDictionaryEquivalencyStep : IEquivalencyStep
 
         return assertionChain.Succeeded;
     }
+#pragma warning restore IL3051
 
+    [RequiresDynamicCode("MakeGenericMethod requires dynamic code generation")]
     private static DictionaryInterfaceInfo EnsureSubjectIsOfTheExpectedDictionaryType(AssertionChain assertionChain,
         Comparands comparands,
         DictionaryInterfaceInfo expectedDictionary)
@@ -159,6 +164,7 @@ public class GenericDictionaryEquivalencyStep : IEquivalencyStep
         return new KeyDifference<TSubjectKey, TExpectedKey>(missingKeys, additionalKeys);
     }
 
+    [RequiresDynamicCode("MakeGenericMethod requires dynamic code generation")]
     private static void AssertDictionaryEquivalence(Comparands comparands, AssertionChain assertionChain,
         IEquivalencyValidationContext context,
         IValidateChildNodeEquivalency parent, DictionaryInterfaceInfo actualDictionary,

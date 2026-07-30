@@ -14,7 +14,7 @@ internal static class MethodInfoExtensions
     /// They are a subset of <see cref="MethodImplAttributes"/> which can be checked on a type and therefore this mask has to be applied to check only for options.
     /// </summary>
     private static readonly Lazy<int> ImplementationOptionsMask =
-        new(() => Enum.GetValues(typeof(MethodImplOptions)).Cast<int>().Sum(x => x));
+        new(() => Enum.GetValues<MethodImplOptions>().Cast<int>().Sum(x => (int)x));
 
     internal static bool IsAsync(this MethodInfo methodInfo)
     {

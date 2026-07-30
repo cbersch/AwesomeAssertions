@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -42,7 +43,8 @@ public static class TypeExtensions
     /// Returns a method selector for the current <see cref="Type"/>.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is <see langword="null"/>.</exception>
-    public static MethodInfoSelector Methods(this Type type)
+    public static MethodInfoSelector Methods(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] this Type type)
     {
         return new MethodInfoSelector(type);
     }
@@ -62,7 +64,8 @@ public static class TypeExtensions
     /// Returns a property selector for the current <see cref="Type"/>.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is <see langword="null"/>.</exception>
-    public static PropertyInfoSelector Properties(this Type type)
+    public static PropertyInfoSelector Properties(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] this Type type)
     {
         return new PropertyInfoSelector(type);
     }

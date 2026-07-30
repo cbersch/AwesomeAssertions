@@ -29,6 +29,24 @@ public class TypeAssertions : ReferenceTypeAssertions<Type, TypeAssertions>
         this.assertionChain = assertionChain;
     }
 
+    [DynamicallyAccessedMembers(
+        DynamicallyAccessedMemberTypes.Interfaces |
+        DynamicallyAccessedMemberTypes.PublicProperties |
+        DynamicallyAccessedMemberTypes.NonPublicProperties |
+        DynamicallyAccessedMemberTypes.PublicMethods |
+        DynamicallyAccessedMemberTypes.NonPublicMethods |
+        DynamicallyAccessedMemberTypes.PublicConstructors |
+        DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+    private new Type Subject
+    {
+        get
+        {
+#pragma warning disable IL2073 // base.Subject does not carry DynamicallyAccessedMembers but the value is the same Type
+            return base.Subject;
+#pragma warning restore IL2073
+        }
+    }
+
     /// <summary>
     /// Asserts that the current <see cref="Type"/> is equal to the specified <typeparamref name="TExpected"/> type.
     /// </summary>
@@ -85,7 +103,15 @@ public class TypeAssertions : ReferenceTypeAssertions<Type, TypeAssertions>
     public new AndConstraint<TypeAssertions> BeAssignableTo<T>([StringSyntax("CompositeFormat")] string because = "",
         params object[] becauseArgs)
     {
-        return BeAssignableTo(typeof(T), because, becauseArgs);
+        bool isAssignable = typeof(T).IsAssignableFrom(Subject);
+
+        assertionChain
+            .BecauseOf(because, becauseArgs)
+            .ForCondition(isAssignable)
+            .FailWith("Expected {context:type} {0} to be assignable to {1}{reason}, but it is not.",
+                Subject, typeof(T));
+
+        return new AndConstraint<TypeAssertions>(this);
     }
 
     /// <summary>
@@ -136,7 +162,15 @@ public class TypeAssertions : ReferenceTypeAssertions<Type, TypeAssertions>
     public new AndConstraint<TypeAssertions> NotBeAssignableTo<T>([StringSyntax("CompositeFormat")] string because = "",
         params object[] becauseArgs)
     {
-        return NotBeAssignableTo(typeof(T), because, becauseArgs);
+        bool isAssignable = typeof(T).IsAssignableFrom(Subject);
+
+        assertionChain
+            .BecauseOf(because, becauseArgs)
+            .ForCondition(!isAssignable)
+            .FailWith("Expected {context:type} {0} to not be assignable to {1}{reason}, but it is.",
+                Subject, typeof(T));
+
+        return new AndConstraint<TypeAssertions>(this);
     }
 
     /// <summary>

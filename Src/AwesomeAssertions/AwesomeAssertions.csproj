@@ -4,6 +4,7 @@
   <PropertyGroup>
     <!-- Check https://github.com/AwesomeAssertions/AwesomeAssertions/issues/365 when removing net6. -->
     <TargetFrameworks>net47;net6.0;net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>../AwesomeAssertions.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

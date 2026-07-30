@@ -27,7 +27,7 @@ public static class ObjectAssertionsExtensions
     /// Zero or more objects to format using the placeholders in <paramref name="because" />.
     /// </param>
     [return: NotNull]
-    public static AndConstraint<ObjectAssertions> BeDataContractSerializable(this ObjectAssertions assertions,
+    [RequiresUnreferencedCode("DataContractSerializer uses reflection and cannot be statically analyzed")]    [RequiresDynamicCode("DataContractSerializer requires dynamic code generation")]    public static AndConstraint<ObjectAssertions> BeDataContractSerializable(this ObjectAssertions assertions,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
         return BeDataContractSerializable<object>(assertions, options => options, because, becauseArgs);
@@ -53,6 +53,8 @@ public static class ObjectAssertionsExtensions
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
     [return: NotNull]
+    [RequiresUnreferencedCode("DataContractSerializer uses reflection and cannot be statically analyzed")]
+    [RequiresDynamicCode("DataContractSerializer requires dynamic code generation")]
     public static AndConstraint<ObjectAssertions> BeDataContractSerializable<T>(this ObjectAssertions assertions,
         Func<EquivalencyOptions<T>, EquivalencyOptions<T>> options,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
@@ -81,6 +83,8 @@ public static class ObjectAssertionsExtensions
         return new AndConstraint<ObjectAssertions>(assertions);
     }
 
+    [RequiresUnreferencedCode("DataContractSerializer uses reflection and cannot be statically analyzed")]
+    [RequiresDynamicCode("DataContractSerializer requires dynamic code generation")]
     private static object CreateCloneUsingDataContractSerializer(object subject)
     {
         using var stream = new MemoryStream();
@@ -103,6 +107,7 @@ public static class ObjectAssertionsExtensions
     /// Zero or more objects to format using the placeholders in <paramref name="because" />.
     /// </param>
     [return: NotNull]
+    [RequiresUnreferencedCode("XmlSerializer uses reflection and cannot be statically analyzed")]
     public static AndConstraint<ObjectAssertions> BeXmlSerializable(this ObjectAssertions assertions,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
@@ -126,6 +131,7 @@ public static class ObjectAssertionsExtensions
         return new AndConstraint<ObjectAssertions>(assertions);
     }
 
+    [RequiresUnreferencedCode("XmlSerializer uses reflection and cannot be statically analyzed")]
     private static object CreateCloneUsingXmlSerializer(object subject)
     {
         using var stream = new MemoryStream();

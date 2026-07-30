@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using JetBrains.Annotations;
 
@@ -47,11 +48,14 @@ internal sealed class EventRecorder : IEventRecording, IDisposable
 
     public Type EventHandlerType { get; private set; }
 
+    [RequiresDynamicCode("Creating dynamic event handlers requires dynamic code generation")]
     public void Attach(WeakReference subject, EventInfo eventInfo)
     {
         EventHandlerType = eventInfo.EventHandlerType;
 
+#pragma warning disable IL2072 // EventInfo.EventHandlerType cannot be statically annotated with DynamicallyAccessedMembers
         Delegate handler = EventHandlerFactory.GenerateHandler(eventInfo.EventHandlerType, this);
+#pragma warning restore IL2072
         eventInfo.AddEventHandler(subject.Target, handler);
 
         cleanup = () =>

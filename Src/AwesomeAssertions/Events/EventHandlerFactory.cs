@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -13,7 +14,10 @@ internal static class EventHandlerFactory
     /// Generates an eventhandler for an event of type eventSignature that calls RegisterEvent on recorder
     /// when invoked.
     /// </summary>
-    public static Delegate GenerateHandler(Type eventSignature, EventRecorder recorder)
+    [RequiresDynamicCode("Creating dynamic methods requires dynamic code generation")]
+    public static Delegate GenerateHandler(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type eventSignature,
+        EventRecorder recorder)
     {
         Type returnType = GetDelegateReturnType(eventSignature);
         Type[] parameters = GetDelegateParameterTypes(eventSignature);
@@ -78,7 +82,8 @@ internal static class EventHandlerFactory
     /// <summary>
     /// Finds the Return Type of a Delegate.
     /// </summary>
-    private static Type GetDelegateReturnType(Type d)
+    private static Type GetDelegateReturnType(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type d)
     {
         MethodInfo invoke = DelegateInvokeMethod(d);
         return invoke.ReturnType;
@@ -87,7 +92,8 @@ internal static class EventHandlerFactory
     /// <summary>
     /// Returns an Array of Types that make up a delegate's parameter signature.
     /// </summary>
-    private static Type[] GetDelegateParameterTypes(Type d)
+    private static Type[] GetDelegateParameterTypes(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type d)
     {
         MethodInfo invoke = DelegateInvokeMethod(d);
 
@@ -121,7 +127,8 @@ internal static class EventHandlerFactory
     /// <summary>
     /// Returns T/F Dependent on a Type Being a Delegate.
     /// </summary>
-    private static bool TypeIsDelegate(Type d)
+    private static bool TypeIsDelegate(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type d)
     {
         if (d.BaseType != typeof(MulticastDelegate))
         {
@@ -135,7 +142,8 @@ internal static class EventHandlerFactory
     /// <summary>
     /// Returns the MethodInfo for the Delegate's "Invoke" Method.
     /// </summary>
-    private static MethodInfo DelegateInvokeMethod(Type d)
+    private static MethodInfo DelegateInvokeMethod(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type d)
     {
         if (!TypeIsDelegate(d))
         {

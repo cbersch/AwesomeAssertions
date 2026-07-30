@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -83,9 +84,12 @@ public class AttributeBasedFormatter : IValueFormatter
     private static Dictionary<Type, MethodInfo> FindCustomFormatters()
     {
         var query =
+#pragma warning disable IL2067 // custom attribute-based formatters are not supported in trimmed/AOT builds;
+                               // this code path will silently produce no results if trimmed
             from type in TypeReflector.GetAllTypesFromAppDomain(Applicable)
             where type is not null
-            from method in type.GetMethods(BindingFlags.Static | BindingFlags.Public)
+            from method in GetFormatterMethods(type)
+#pragma warning restore IL2067
             where method.IsStatic
             where method.ReturnType == typeof(void)
             where method.IsDecoratedWithOrInherit<ValueFormatterAttribute>()
@@ -98,6 +102,13 @@ public class AttributeBasedFormatter : IValueFormatter
             select formatterGroup.First();
 
         return query.ToDictionary(f => f.Type, f => f.Method);
+    }
+
+    private static MethodInfo[] GetFormatterMethods(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+        Type type)
+    {
+        return type.GetMethods(BindingFlags.Static | BindingFlags.Public);
     }
 
     private static bool Applicable(Assembly assembly)

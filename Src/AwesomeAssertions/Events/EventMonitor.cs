@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -28,7 +29,9 @@ internal sealed class EventMonitor<T> : IMonitor<T>
 
         subject = new WeakReference(eventSource);
 
+#pragma warning disable IL2087, IL3050 // typeof(T) cannot carry DynamicallyAccessedMembersAttribute, and Attach requires dynamic code
         Attach(typeof(T), this.options.TimestampProvider);
+#pragma warning restore IL2087, IL3050
     }
 
     public T Subject => (T)subject.Target;
@@ -80,7 +83,10 @@ internal sealed class EventMonitor<T> : IMonitor<T>
         return recorder;
     }
 
-    private void Attach(Type typeDefiningEventsToMonitor, Func<DateTime> utcNow)
+    [RequiresDynamicCode("Creating dynamic event handlers requires dynamic code generation")]
+    private void Attach(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.Interfaces)] Type typeDefiningEventsToMonitor,
+        Func<DateTime> utcNow)
     {
         if (subject.Target is null)
         {
@@ -100,7 +106,8 @@ internal sealed class EventMonitor<T> : IMonitor<T>
         }
     }
 
-    private static EventInfo[] GetPublicEvents(Type type)
+    private static EventInfo[] GetPublicEvents(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents | DynamicallyAccessedMemberTypes.Interfaces)] Type type)
     {
         if (!type.IsInterface)
         {
@@ -109,8 +116,14 @@ internal sealed class EventMonitor<T> : IMonitor<T>
 
         return new[] { type }
             .Concat(type.GetInterfaces())
-            .SelectMany(i => i.GetEvents())
+            .SelectMany(GetEventsFromInterface)
             .ToArray();
+    }
+
+    private static EventInfo[] GetEventsFromInterface(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicEvents)] Type i)
+    {
+        return i.GetEvents();
     }
 
     public void Dispose()
@@ -135,6 +148,7 @@ internal sealed class EventMonitor<T> : IMonitor<T>
         }
     }
 
+    [RequiresDynamicCode("Creating dynamic event handlers requires dynamic code generation")]
     private void AttachEventHandler(EventInfo eventInfo, Func<DateTime> utcNow)
     {
         if (!recorderMap.TryGetValue(eventInfo.Name, out _))
@@ -148,6 +162,7 @@ internal sealed class EventMonitor<T> : IMonitor<T>
         }
     }
 
+    [RequiresDynamicCode("Creating dynamic event handlers requires dynamic code generation")]
     private void AttachEventHandler(EventInfo eventInfo, EventRecorder recorder)
     {
         try

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,9 +14,9 @@ namespace AwesomeAssertions.Common;
 /// Various extensions for <see cref="Type"/> and other reflection types.
 /// </summary>
 /// <remarks>
-/// Here we also have extensions which only forward to Reflectify to avoid ambiguities. 
+/// Here we also have extensions which only forward to Reflectify to avoid ambiguities.
 /// We also must take care because Reflectify provides extensions which have identical signatures
-/// as our extensions, but behave differently: 
+/// as our extensions, but behave differently:
 /// e.g. Reflectify's GetMatchingAttributes method always includes inherited attributes,
 /// whereas our extensions does not. For inheritance we have GetMatchingOrInheritedAttributes.
 /// Our IsRecord extension does caching, which greatly improves performance, but Reflectify doesn't.
@@ -154,7 +155,9 @@ internal static class TypeExtensions
     /// Returns the interfaces that the <paramref name="type"/> implements that are concrete
     /// versions of the <paramref name="openGenericType"/>.
     /// </summary>
-    public static Type[] GetClosedGenericInterfaces(this Type type, Type openGenericType)
+    public static Type[] GetClosedGenericInterfaces(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type,
+        Type openGenericType)
     {
         if (type.IsGenericType && type.GetGenericTypeDefinition() == openGenericType)
         {
@@ -230,29 +233,41 @@ internal static class TypeExtensions
         return type.IsSealed && type.IsAbstract;
     }
 
-    public static MethodInfo GetMethod(this Type type, string methodName, IEnumerable<Type> parameterTypes)
+    public static MethodInfo GetMethod(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] this Type type,
+        string methodName,
+        IEnumerable<Type> parameterTypes)
     {
         return type.GetMethods(AllStaticAndInstanceMembersFlag)
             .SingleOrDefault(m =>
                 m.Name == methodName && m.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes));
     }
 
-    public static bool HasMethod(this Type type, string methodName, IEnumerable<Type> parameterTypes)
+    public static bool HasMethod(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] this Type type,
+        string methodName, IEnumerable<Type> parameterTypes)
     {
         return type.GetMethod(methodName, parameterTypes) is not null;
     }
 
-    public static MethodInfo GetParameterlessMethod(this Type type, string methodName)
+    public static MethodInfo GetParameterlessMethod(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] this Type type,
+        string methodName)
     {
         return type.GetMethod(methodName, Enumerable.Empty<Type>());
     }
 
-    public static PropertyInfo FindPropertyByName(this Type type, string propertyName)
+    public static PropertyInfo FindPropertyByName(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] this Type type,
+        string propertyName)
     {
         return type.GetProperty(propertyName, AllStaticAndInstanceMembersFlag);
     }
 
-    public static bool HasExplicitlyImplementedProperty(this Type type, Type interfaceType, string propertyName)
+    public static bool HasExplicitlyImplementedProperty(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] this Type type,
+        Type interfaceType,
+        string propertyName)
     {
         bool hasGetter = type.HasParameterlessMethod($"{interfaceType.FullName}.get_{propertyName}");
 
@@ -264,12 +279,16 @@ internal static class TypeExtensions
         return hasGetter || hasSetter;
     }
 
-    private static bool HasParameterlessMethod(this Type type, string methodName)
+    private static bool HasParameterlessMethod(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] this Type type,
+        string methodName)
     {
         return type.GetParameterlessMethod(methodName) is not null;
     }
 
-    public static PropertyInfo GetIndexerByParameterTypes(this Type type, IEnumerable<Type> parameterTypes)
+    public static PropertyInfo GetIndexerByParameterTypes(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] this Type type,
+        IEnumerable<Type> parameterTypes)
     {
         return type.GetProperties(AllStaticAndInstanceMembersFlag)
             .SingleOrDefault(p =>
@@ -279,7 +298,9 @@ internal static class TypeExtensions
     public static bool IsIndexer(this PropertyInfo member) =>
         Reflectify.PropertyInfoExtensions.IsIndexer(member);
 
-    public static ConstructorInfo GetConstructor(this Type type, IEnumerable<Type> parameterTypes)
+    public static ConstructorInfo GetConstructor(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] this Type type,
+        IEnumerable<Type> parameterTypes)
     {
         const BindingFlags allInstanceMembersFlag =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
@@ -289,7 +310,9 @@ internal static class TypeExtensions
             .SingleOrDefault(m => m.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes));
     }
 
-    public static bool IsAssignableToOpenGeneric(this Type type, Type definition)
+    public static bool IsAssignableToOpenGeneric(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type,
+        Type definition)
     {
         // The CLR type system does not consider anything to be assignable to an open generic type.
         // For the purposes of test assertions, the user probably means that the subject type is
@@ -302,7 +325,9 @@ internal static class TypeExtensions
         return type == definition || type.IsDerivedFromOpenGeneric(definition);
     }
 
-    private static bool IsImplementationOfOpenGeneric(this Type type, Type definition)
+    private static bool IsImplementationOfOpenGeneric(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type,
+        Type definition)
     {
         // check subject against definition
         if (type.IsInterface && type.IsGenericType &&

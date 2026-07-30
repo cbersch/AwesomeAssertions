@@ -14,7 +14,9 @@ public class AndWhichConstraint<TParent, TSubject> : AndConstraint<TParent>
 {
     private readonly AssertionChain assertionChain;
     private readonly string pathPostfix;
+#pragma warning disable IL2091 // Lazy<TSubject>'s PublicParameterlessConstructor constraint is not used when constructing with Func<T>
     private readonly Lazy<TSubject> getSubject;
+#pragma warning restore IL2091
 
     /// <summary>
     /// Creates an object that allows continuing an assertion executed through <paramref name="parent"/> and
@@ -23,7 +25,9 @@ public class AndWhichConstraint<TParent, TSubject> : AndConstraint<TParent>
     public AndWhichConstraint(TParent parent, TSubject subject)
         : base(parent)
     {
+#pragma warning disable IL2091 // Lazy<TSubject> only requires the parameterless constructor when using Lazy<T>(), not Lazy<T>(Func<T>)
         getSubject = new Lazy<TSubject>(() => subject);
+#pragma warning restore IL2091
     }
 
     /// <summary>
@@ -34,7 +38,9 @@ public class AndWhichConstraint<TParent, TSubject> : AndConstraint<TParent>
     public AndWhichConstraint(TParent parent, TSubject subject, AssertionChain assertionChain, string pathPostfix = "")
         : base(parent)
     {
+#pragma warning disable IL2091 // Lazy<TSubject> only requires the parameterless constructor when using Lazy<T>(), not Lazy<T>(Func<T>)
         getSubject = new Lazy<TSubject>(() => subject);
+#pragma warning restore IL2091
 
         this.assertionChain = assertionChain;
         this.pathPostfix = pathPostfix;
@@ -50,7 +56,9 @@ public class AndWhichConstraint<TParent, TSubject> : AndConstraint<TParent>
     public AndWhichConstraint(TParent parent, IEnumerable<TSubject> subjects)
         : base(parent)
     {
+#pragma warning disable IL2091 // Lazy<TSubject> only requires the parameterless constructor when using Lazy<T>(), not Lazy<T>(Func<T>)
         getSubject = new Lazy<TSubject>(() => Single(subjects));
+#pragma warning restore IL2091
     }
 
     /// <summary>
@@ -65,7 +73,9 @@ public class AndWhichConstraint<TParent, TSubject> : AndConstraint<TParent>
     public AndWhichConstraint(TParent parent, IEnumerable<TSubject> subjects, AssertionChain assertionChain, string pathPostfix)
         : base(parent)
     {
+#pragma warning disable IL2091 // Lazy<TSubject> only requires the parameterless constructor when using Lazy<T>(), not Lazy<T>(Func<T>)
         getSubject = new Lazy<TSubject>(() => Single(subjects));
+#pragma warning restore IL2091
 
         this.assertionChain = assertionChain;
         this.pathPostfix = pathPostfix;

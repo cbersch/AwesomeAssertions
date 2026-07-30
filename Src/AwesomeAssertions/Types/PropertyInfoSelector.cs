@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -19,7 +20,8 @@ public class PropertyInfoSelector : IEnumerable<PropertyInfo>
     /// </summary>
     /// <param name="type">The type from which to select properties.</param>
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is <see langword="null"/>.</exception>
-    public PropertyInfoSelector(Type type)
+    public PropertyInfoSelector(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] Type type)
         : this([type])
     {
     }
@@ -34,9 +36,17 @@ public class PropertyInfoSelector : IEnumerable<PropertyInfo>
         Guard.ThrowIfArgumentIsNull(types);
         Guard.ThrowIfArgumentContainsNull(types);
 
-        selectedProperties = types.SelectMany(t => t
+        selectedProperties = types.SelectMany(GetDeclaredPropertiesFromType);
+    }
+
+    private static PropertyInfo[] GetDeclaredPropertiesFromType(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)]
+        Type t)
+    {
+        return t
             .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance
-                | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static));
+                | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+            .ToArray();
     }
 
     /// <summary>

@@ -1,9 +1,11 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using AwesomeAssertions.CallerIdentification;
@@ -30,6 +32,13 @@ public static class CallerIdentifier
     /// </returns>
     public static string DetermineCallerIdentity()
     {
+#if NET6_0_OR_GREATER
+        if (!RuntimeFeature.IsDynamicCodeSupported)
+        {
+            return null; // AOT-compiled code cannot inspect stack frames
+        }
+#endif
+
         string caller = null;
 
         try
@@ -80,6 +89,12 @@ public static class CallerIdentifier
         return caller;
     }
 
+    private sealed class NoOpDisposable : IDisposable
+    {
+        public static readonly NoOpDisposable Instance = new();
+        public void Dispose() { }
+    }
+
     private sealed class StackFrameReference : IDisposable
     {
         public int SkipStackFrameCount { get; }
@@ -116,11 +131,25 @@ public static class CallerIdentifier
 
     internal static IDisposable OverrideStackSearchUsingCurrentScope()
     {
+#if NET6_0_OR_GREATER
+        if (!RuntimeFeature.IsDynamicCodeSupported)
+        {
+            return NoOpDisposable.Instance; // AOT-compiled code cannot inspect stack frames
+        }
+#endif
+
         return new StackFrameReference();
     }
 
     internal static bool OnlyOneAssertionScopeOnCallStack()
     {
+#if NET6_0_OR_GREATER
+        if (!RuntimeFeature.IsDynamicCodeSupported)
+        {
+            return true; // AOT-compiled code cannot inspect stack frames; assume single scope
+        }
+#endif
+
         var allStackFrames = GetFrames(new StackTrace());
 
         int firstNonAwesomeAssertionsStackFrameIndex = Array.FindIndex(

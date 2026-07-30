@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -19,6 +20,9 @@ public class GenericEnumerableEquivalencyStep : IEquivalencyStep
 #pragma warning restore SA1110
 
     /// <inheritdoc />
+#pragma warning disable IL3051, IL2046 // Interface IEquivalencyStep.Handle cannot have RequiresDynamicCode/RequiresUnreferencedCode without affecting all other implementations
+    [RequiresDynamicCode("MakeGenericMethod requires dynamic code generation")]
+    [RequiresUnreferencedCode("Equivalency uses reflection to inspect types")]
     public EquivalencyResult Handle(Comparands comparands, IEquivalencyValidationContext context,
         IValidateChildNodeEquivalency valueChildNodes)
     {
@@ -83,20 +87,23 @@ public class GenericEnumerableEquivalencyStep : IEquivalencyStep
 
         return assertionChain.Succeeded;
     }
+#pragma warning restore IL3051
 
     private static bool IsCollection(Type type)
     {
         return !typeof(string).IsAssignableFrom(type) && typeof(IEnumerable).IsAssignableFrom(type);
     }
 
-    private static bool IsGenericCollection(Type type)
+    private static bool IsGenericCollection(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type type)
     {
         Type[] enumerableInterfaces = GetIEnumerableInterfaces(type);
 
         return !typeof(string).IsAssignableFrom(type) && enumerableInterfaces.Length > 0;
     }
 
-    private static Type[] GetIEnumerableInterfaces(Type type)
+    private static Type[] GetIEnumerableInterfaces(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type type)
     {
         // Avoid expensive calculation when the type in question can't possibly implement IEnumerable<>.
         if (Type.GetTypeCode(type) != TypeCode.Object)
@@ -109,7 +116,8 @@ public class GenericEnumerableEquivalencyStep : IEquivalencyStep
         return type.GetClosedGenericInterfaces(soughtType);
     }
 
-    private static Type GetTypeOfEnumeration(Type enumerableType)
+    private static Type GetTypeOfEnumeration(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type enumerableType)
     {
         Type interfaceType = GetIEnumerableInterfaces(enumerableType).Single();
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -20,7 +21,8 @@ public class MethodInfoSelector : IEnumerable<MethodInfo>
     /// </summary>
     /// <param name="type">The type from which to select methods.</param>
     /// <exception cref="ArgumentNullException"><paramref name="type"/> is <see langword="null"/>.</exception>
-    public MethodInfoSelector(Type type)
+    public MethodInfoSelector(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)] Type type)
         : this([type])
     {
     }
@@ -35,9 +37,16 @@ public class MethodInfoSelector : IEnumerable<MethodInfo>
         Guard.ThrowIfArgumentIsNull(types);
         Guard.ThrowIfArgumentContainsNull(types);
 
-        selectedMethods = types.SelectMany(t => t
+        selectedMethods = types.SelectMany(GetDeclaredMethodsFromType);
+    }
+
+    private static IEnumerable<MethodInfo> GetDeclaredMethodsFromType(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+        Type t)
+    {
+        return t
             .GetMethods(DeclaredOnly | Instance | Static | Public | NonPublic)
-            .Where(method => !HasSpecialName(method)));
+            .Where(method => !HasSpecialName(method));
     }
 
     /// <summary>

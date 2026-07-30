@@ -347,8 +347,10 @@ public class TypeSelector : IEnumerable<Type>
             }
             else
             {
-                var iEnumerableImplementations = type
-                    .GetInterfaces()
+#pragma warning disable IL2075 // type from List<Type> iterator does not carry DynamicallyAccessedMembers; runtime reflection is acceptable here
+                Type[] typeInterfaces = type.GetInterfaces();
+#pragma warning restore IL2075
+                var iEnumerableImplementations = typeInterfaces
                     .Where(iType => iType.IsGenericType && iType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                     .Select(ied => ied.GetGenericArguments().Single())
                     .ToList();
