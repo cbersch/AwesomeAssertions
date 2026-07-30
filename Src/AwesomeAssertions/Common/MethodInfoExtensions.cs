@@ -19,7 +19,7 @@ internal static class MethodInfoExtensions
 #if NET5_0_OR_GREATER
             return Enum.GetValues<MethodImplOptions>().Cast<int>().Sum(x => (int)x);
 #else
-            return Enum.GetValues(typeof(MethodImplOptions)).Cast<MethodImplOptions>().Cast<int>().Sum(x => (int)x);
+            return Enum.GetValues(typeof(MethodImplOptions)).Cast<int>().Sum(x => (int)x);
 #endif
         });
 

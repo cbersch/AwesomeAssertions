@@ -89,7 +89,7 @@
     </Project>
   </Folder>
   <Folder Name="/AOT/">
-    <Project Path="Tests/AwesomeAssertions.Aot.Specs/AwesomeAssertions.Aot.Specs.csproj">
+    <Project Path="Specs/AwesomeAssertions.Aot.Specs/AwesomeAssertions.Aot.Specs.csproj">
       <BuildType Solution="CI|*" Project="Debug" />
       <Build Solution="CI|*" Project="false" />
     </Project>

@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,9 +24,7 @@ public sealed class AssertionScope : IDisposable
     /// </summary>
     private static readonly AsyncLocal<AssertionScope> DefaultScope = new();
     private static readonly AsyncLocal<AssertionScope> CurrentScope = new();
-#pragma warning disable IL2026 // CallerIdentifier.DetermineCallerIdentity requires unreferenced code; assertion execution depends on caller identification
     private readonly Func<string> callerIdentityProvider = () => CallerIdentifier.DetermineCallerIdentity();
-#pragma warning restore IL2026
     private readonly ContextDataDictionary reportableData = new();
     private readonly StringBuilder tracing = new();
 
