@@ -11,9 +11,11 @@
     <InvariantGlobalization>false</InvariantGlobalization>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <IsPackable>false</IsPackable>
-    <NoWarn>$(NoWarn),IDE0052,1573,1591,1712,CS8002,CS7022</NoWarn>
+    <NoWarn>$(NoWarn),IDE0052,1573,1591,1712,CS8002</NoWarn>
     <DebugType>embedded</DebugType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="Microsoft.Testing.Platform" Version="1.0.0-preview.23621.14" />
+    <PackageReference Include="xunit.v3" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Testing.Platform" Version="1.5.3" />
     <PackageReference Include="JetBrains.Annotations" Version="2026.2.0" />
   </ItemGroup>
 
@@ -33,7 +35,6 @@
   <ItemGroup>
     <!-- Include core test directories that work in AOT -->
     <Compile Include="../../Tests/AwesomeAssertions.Specs/AndWhichConstraintSpecs.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/AssertionExtensionsSpecs.cs" />
     <Compile Include="../../Tests/AwesomeAssertions.Specs/Common/**/*.cs" />
     <Compile Include="../../Tests/AwesomeAssertions.Specs/Collections/**/*.cs" />
     <!-- Exclude problematic test files -->
@@ -41,9 +42,9 @@
     <Compile Remove="../../Tests/AwesomeAssertions.Specs/Collections/**/UIFactsDefinition.cs" />
   </ItemGroup>
 
-  <!-- Exclude Program.cs from linked files, we have our own -->
   <ItemGroup>
     <Compile Remove="../../Tests/AwesomeAssertions.Specs/Program.cs" />
+    <Compile Remove="Program.cs" />
   </ItemGroup>
 
 </Project>
