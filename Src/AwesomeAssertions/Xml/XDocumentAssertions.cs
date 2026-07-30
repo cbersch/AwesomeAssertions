@@ -89,6 +89,8 @@ public class XDocumentAssertions : ReferenceTypeAssertions<XDocument, XDocumentA
     /// <param name="becauseArgs">
     /// Zero or more objects to format using the placeholders in <paramref name="because" />.
     /// </param>
+    [RequiresUnreferencedCode("Equivalency assertions rely on reflection-based equivalency steps and are not trim-compatible.")]
+    [RequiresDynamicCode("Equivalency assertions rely on dynamic code and are not compatible with Native AOT.")]
     [return: NotNull]
     public AndConstraint<XDocumentAssertions> BeEquivalentTo(XDocument expected,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
@@ -115,6 +117,8 @@ public class XDocumentAssertions : ReferenceTypeAssertions<XDocument, XDocumentA
     /// <param name="becauseArgs">
     /// Zero or more objects to format using the placeholders in <paramref name="because" />.
     /// </param>
+    [RequiresUnreferencedCode("Equivalency assertions rely on reflection-based equivalency steps and are not trim-compatible.")]
+    [RequiresDynamicCode("Equivalency assertions rely on dynamic code and are not compatible with Native AOT.")]
     [return: NotNull]
     public AndConstraint<XDocumentAssertions> NotBeEquivalentTo(XDocument unexpected,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)

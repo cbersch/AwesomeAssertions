@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using AwesomeAssertions.Equivalency.Tracing;
 using AwesomeAssertions.Execution;
 
@@ -92,9 +93,15 @@ internal class EquivalencyValidator : IValidateChildNodeEquivalency
 
     private void TryToProveNodesAreEquivalent(Comparands comparands, IEquivalencyValidationContext context)
     {
+        [UnconditionalSuppressMessage("Trimming", "IL2026",
+            Justification = "Equivalency runtime intentionally accesses GlobalEquivalencyOptions.Plan, which is explicitly marked as non-trim-compatible.")]
+        [UnconditionalSuppressMessage("AotAnalysis", "IL3050",
+            Justification = "Equivalency runtime intentionally accesses GlobalEquivalencyOptions.Plan, which is explicitly marked as non-AOT-compatible.")]
+        static EquivalencyPlan GetPlan() => AssertionConfiguration.Current.Equivalency.Plan;
+
         using var _ = context.Tracer.WriteBlock(node => node.Expectation.Description);
 
-        foreach (IEquivalencyStep step in AssertionConfiguration.Current.Equivalency.Plan)
+        foreach (IEquivalencyStep step in GetPlan())
         {
             var result = step.Handle(comparands, context, this);
 

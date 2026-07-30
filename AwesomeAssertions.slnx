@@ -39,6 +39,9 @@
     <Project Path="Tests/AwesomeAssertions.Specs/AwesomeAssertions.Specs.csproj">
       <BuildType Solution="CI|*" Project="Debug" />
     </Project>
+    <Project Path="Tests/AwesomeAssertions.Aot.Specs/AwesomeAssertions.Aot.Specs.csproj">
+      <BuildType Solution="CI|*" Project="Debug" />
+    </Project>
     <Project Path="Tests/Benchmarks/Benchmarks.csproj">
       <BuildType Solution="CI|*" Project="Release" />
       <Build Solution="CI|*" Project="false" />
@@ -86,12 +89,6 @@
     </Project>
     <Project Path="Tests/TestFrameworks/MicrosoftTestingPlatform/TUnit.Specs/TUnit.Specs.csproj">
       <BuildType Solution="CI|*" Project="Debug" />
-    </Project>
-  </Folder>
-  <Folder Name="/AOT/">
-    <Project Path="Specs/AwesomeAssertions.Aot.Specs/AwesomeAssertions.Aot.Specs.csproj">
-      <BuildType Solution="CI|*" Project="Debug" />
-      <Build Solution="CI|*" Project="false" />
     </Project>
   </Folder>
   <Project Path="Build/_build.csproj">

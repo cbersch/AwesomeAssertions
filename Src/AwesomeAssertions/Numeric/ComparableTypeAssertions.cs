@@ -92,6 +92,8 @@ public class ComparableTypeAssertions<T, TAssertions> : ReferenceTypeAssertions<
     /// <param name="becauseArgs">
     /// Zero or more objects to format using the placeholders in <paramref name="because"/>.
     /// </param>
+    [RequiresUnreferencedCode("Equivalency assertions rely on reflection-based equivalency steps and are not trim-compatible.")]
+    [RequiresDynamicCode("Equivalency assertions rely on dynamic code and are not compatible with Native AOT.")]
     [return: NotNull]
     public AndConstraint<TAssertions> BeEquivalentTo<TExpectation>(TExpectation expectation,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
@@ -121,6 +123,8 @@ public class ComparableTypeAssertions<T, TAssertions> : ReferenceTypeAssertions<
     /// Zero or more objects to format using the placeholders in <paramref name="because"/>.
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="config"/> is <see langword="null"/>.</exception>
+    [RequiresUnreferencedCode("Equivalency assertions rely on reflection-based equivalency steps and are not trim-compatible.")]
+    [RequiresDynamicCode("Equivalency assertions rely on dynamic code and are not compatible with Native AOT.")]
     [return: NotNull]
     public AndConstraint<TAssertions> BeEquivalentTo<TExpectation>(TExpectation expectation,
         Func<EquivalencyOptions<TExpectation>, EquivalencyOptions<TExpectation>> config,

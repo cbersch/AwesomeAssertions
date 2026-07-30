@@ -1,0 +1,8 @@
+﻿<Project>
+  <!-- inherit solution wide configuration -->
+  <Import Project="../../../Directory.Build.props"/>
+
+  <ItemGroup>
+    <PackageReference Remove="Microsoft.NET.Test.Sdk" />
+  </ItemGroup>
+</Project>

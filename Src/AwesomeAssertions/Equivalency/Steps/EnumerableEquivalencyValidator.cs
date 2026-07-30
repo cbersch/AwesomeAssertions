@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AwesomeAssertions.Equivalency.Execution;
 using AwesomeAssertions.Equivalency.Tracing;
@@ -35,6 +36,10 @@ internal class EnumerableEquivalencyValidator
 
     public OrderingRuleCollection OrderingRules { get; init; }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2026",
+        Justification = "This internal validator intentionally forwards to equivalency APIs marked as non-trim-compatible.")]
+    [UnconditionalSuppressMessage("AotAnalysis", "IL3050",
+        Justification = "This internal validator intentionally forwards to equivalency APIs marked as non-AOT-compatible.")]
     public void Execute<T>(object[] subject, T[] expectation)
     {
         if (AssertIsNotNull(expectation, subject) && AssertCollectionsHaveSameCount(subject, expectation))

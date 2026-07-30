@@ -110,6 +110,7 @@ public static class ObjectAssertionsExtensions
     /// </param>
     [return: NotNull]
     [RequiresUnreferencedCode("XmlSerializer uses reflection and cannot be statically analyzed")]
+    [RequiresDynamicCode("XmlSerializer and equivalency assertions rely on dynamic code and are not compatible with Native AOT")]
     public static AndConstraint<ObjectAssertions> BeXmlSerializable(this ObjectAssertions assertions,
         [StringSyntax("CompositeFormat")] string because = "", params object[] becauseArgs)
     {
