@@ -73,6 +73,12 @@ public static class Formatter
             formatters.Add(new PredicateLambdaExpressionValueFormatter());
             formatters.Add(new DefaultValueFormatter());
         }
+#if NET5_0_OR_GREATER
+        else
+        {
+            formatters.Add(new ToStringValueFormatter());
+        }
+#endif
 
         return formatters;
     }
@@ -218,6 +224,24 @@ public static class Formatter
     /// <remarks>
     /// Is used to detect the maximum recursion depth as well as cyclic references in the graph.
     /// </remarks>
+    /// <summary>AOT-safe fallback: formats any value by calling ToString().</summary>
+    private sealed class ToStringValueFormatter : IValueFormatter
+    {
+        public bool CanHandle(object value) => true;
+
+        public void Format(object value, FormattedObjectGraph formattedGraph, FormattingContext context, FormatChild formatChild)
+        {
+            if (context.UseLineBreaks)
+            {
+                formattedGraph.AddFragmentOnNewLine(value.ToString());
+            }
+            else
+            {
+                formattedGraph.AddFragment(value.ToString());
+            }
+        }
+    }
+
     private sealed class ObjectGraph
     {
         private readonly CyclicReferenceDetector tracker;

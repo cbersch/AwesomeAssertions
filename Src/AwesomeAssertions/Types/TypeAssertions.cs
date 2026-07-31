@@ -29,6 +29,9 @@ public class TypeAssertions : ReferenceTypeAssertions<Type, TypeAssertions>
         this.assertionChain = assertionChain;
     }
 
+    /// <summary>
+    /// Gets the type of the object which is being asserted.
+    /// </summary>
     [DynamicallyAccessedMembers(
         DynamicallyAccessedMemberTypes.Interfaces |
         DynamicallyAccessedMemberTypes.PublicProperties |
@@ -37,13 +40,12 @@ public class TypeAssertions : ReferenceTypeAssertions<Type, TypeAssertions>
         DynamicallyAccessedMemberTypes.NonPublicMethods |
         DynamicallyAccessedMemberTypes.PublicConstructors |
         DynamicallyAccessedMemberTypes.NonPublicConstructors)]
-    private new Type Subject
+    public new Type Subject
     {
+        [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2073", Justification = "Value is the same Type instance passed to the constructor; DynamicallyAccessedMembers on this property hold.")]
         get
         {
-#pragma warning disable IL2073 // base.Subject does not carry DynamicallyAccessedMembers but the value is the same Type
             return base.Subject;
-#pragma warning restore IL2073
         }
     }
 

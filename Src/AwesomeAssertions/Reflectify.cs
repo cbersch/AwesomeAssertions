@@ -480,7 +480,10 @@ internal static class TypeMemberExtensions
     /// Finds an explicit conversion operator from the <paramref name="sourceType"/> to the <paramref name="targetType"/>.
     /// Returns <see langword="null" /> if no such operator exists.
     /// </summary>
-    public static MethodInfo FindExplicitConversionOperator(this Type type, Type sourceType, Type targetType)
+    public static MethodInfo FindExplicitConversionOperator(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+        this Type type,
+        Type sourceType, Type targetType)
     {
         return type
             .GetConversionOperators(sourceType, targetType, name => name is "op_Explicit")
@@ -491,14 +494,20 @@ internal static class TypeMemberExtensions
     /// Finds an implicit conversion operator from the <paramref name="sourceType"/> to the <paramref name="targetType"/>.
     /// Returns <see langword="null" /> if no such operator exists.
     /// </summary>
-    public static MethodInfo FindImplicitConversionOperator(this Type type, Type sourceType, Type targetType)
+    public static MethodInfo FindImplicitConversionOperator(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+        this Type type,
+        Type sourceType, Type targetType)
     {
         return type
             .GetConversionOperators(sourceType, targetType, name => name is "op_Implicit")
             .SingleOrDefault();
     }
 
-    private static IEnumerable<MethodInfo> GetConversionOperators(this Type type, Type sourceType, Type targetType,
+    private static IEnumerable<MethodInfo> GetConversionOperators(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+        this Type type,
+        Type sourceType, Type targetType,
 #pragma warning restore AV1561
         Func<string, bool> predicate)
     {

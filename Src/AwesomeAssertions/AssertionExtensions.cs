@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using AwesomeAssertions.Collections;
@@ -508,9 +509,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static ComparableTypeAssertions<T> Should<T>([NotNull] this IComparable<T> comparableValue)
+    public static ComparableTypeAssertions<T> Should<T>([NotNull] this IComparable<T> comparableValue, [CallerArgumentExpression(nameof(comparableValue))] string paramName = "")
     {
-        return new ComparableTypeAssertions<T>(comparableValue, AssertionChain.GetOrCreate());
+        return new ComparableTypeAssertions<T>(comparableValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -519,9 +520,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<int> Should(this int actualValue)
+    public static NumericAssertions<int> Should(this int actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new Int32Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new Int32Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -530,9 +531,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<int> Should([NotNull] this int? actualValue)
+    public static NullableNumericAssertions<int> Should([NotNull] this int? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableInt32Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableInt32Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -541,9 +542,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<uint> Should(this uint actualValue)
+    public static NumericAssertions<uint> Should(this uint actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new UInt32Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new UInt32Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -552,9 +553,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<uint> Should([NotNull] this uint? actualValue)
+    public static NullableNumericAssertions<uint> Should([NotNull] this uint? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableUInt32Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableUInt32Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -563,9 +564,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<decimal> Should(this decimal actualValue)
+    public static NumericAssertions<decimal> Should(this decimal actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new DecimalAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new DecimalAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -574,9 +575,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<decimal> Should([NotNull] this decimal? actualValue)
+    public static NullableNumericAssertions<decimal> Should([NotNull] this decimal? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableDecimalAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableDecimalAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -585,9 +586,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<byte> Should(this byte actualValue)
+    public static NumericAssertions<byte> Should(this byte actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new ByteAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new ByteAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -596,9 +597,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<byte> Should([NotNull] this byte? actualValue)
+    public static NullableNumericAssertions<byte> Should([NotNull] this byte? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableByteAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableByteAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -607,9 +608,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<sbyte> Should(this sbyte actualValue)
+    public static NumericAssertions<sbyte> Should(this sbyte actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new SByteAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new SByteAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -618,9 +619,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<sbyte> Should([NotNull] this sbyte? actualValue)
+    public static NullableNumericAssertions<sbyte> Should([NotNull] this sbyte? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableSByteAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableSByteAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -629,9 +630,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<short> Should(this short actualValue)
+    public static NumericAssertions<short> Should(this short actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new Int16Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new Int16Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -640,9 +641,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<short> Should([NotNull] this short? actualValue)
+    public static NullableNumericAssertions<short> Should([NotNull] this short? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableInt16Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableInt16Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -651,9 +652,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<ushort> Should(this ushort actualValue)
+    public static NumericAssertions<ushort> Should(this ushort actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new UInt16Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new UInt16Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -662,9 +663,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<ushort> Should([NotNull] this ushort? actualValue)
+    public static NullableNumericAssertions<ushort> Should([NotNull] this ushort? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableUInt16Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableUInt16Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -673,9 +674,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<long> Should(this long actualValue)
+    public static NumericAssertions<long> Should(this long actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new Int64Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new Int64Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -684,9 +685,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<long> Should([NotNull] this long? actualValue)
+    public static NullableNumericAssertions<long> Should([NotNull] this long? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableInt64Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableInt64Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -695,9 +696,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<ulong> Should(this ulong actualValue)
+    public static NumericAssertions<ulong> Should(this ulong actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new UInt64Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new UInt64Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -706,9 +707,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<ulong> Should([NotNull] this ulong? actualValue)
+    public static NullableNumericAssertions<ulong> Should([NotNull] this ulong? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableUInt64Assertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableUInt64Assertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -717,9 +718,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<float> Should(this float actualValue)
+    public static NumericAssertions<float> Should(this float actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new SingleAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new SingleAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -728,9 +729,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<float> Should([NotNull] this float? actualValue)
+    public static NullableNumericAssertions<float> Should([NotNull] this float? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableSingleAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableSingleAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -739,9 +740,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NumericAssertions<double> Should(this double actualValue)
+    public static NumericAssertions<double> Should(this double actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new DoubleAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new DoubleAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>
@@ -750,9 +751,9 @@ public static class AssertionExtensions
     /// </summary>
     [Pure]
     [return: NotNull]
-    public static NullableNumericAssertions<double> Should([NotNull] this double? actualValue)
+    public static NullableNumericAssertions<double> Should([NotNull] this double? actualValue, [CallerArgumentExpression(nameof(actualValue))] string paramName = "")
     {
-        return new NullableDoubleAssertions(actualValue, AssertionChain.GetOrCreate());
+        return new NullableDoubleAssertions(actualValue, AssertionChain.GetOrCreate(paramName));
     }
 
     /// <summary>

@@ -43,6 +43,7 @@
     <InternalsVisibleTo Include="AwesomeAssertions.Specs" />
     <InternalsVisibleTo Include="AwesomeAssertions.Equivalency.Specs" />
     <InternalsVisibleTo Include="AwesomeAssertions.Aot.Specs" />
+    <InternalsVisibleTo Include="AwesomeAssertions.Aot.Single.Specs" />
     <InternalsVisibleTo Include="Benchmarks" />
   </ItemGroup>
 

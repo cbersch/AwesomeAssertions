@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -164,7 +165,9 @@ public class TypeExtensionsSpecs
         typeof(ImmutableArray<int>).IsRecord().Should().BeFalse();
     }
 
-    private static MethodInfo GetFakeConversionOperator(Type type, string name, BindingFlags bindingAttr, Type returnType)
+    private static MethodInfo GetFakeConversionOperator(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+        Type type, string name, BindingFlags bindingAttr, Type returnType)
     {
         MethodInfo[] methods = type.GetMethods(bindingAttr);
 
@@ -201,13 +204,13 @@ public class TypeExtensionsSpecs
     }
 
     [UsedImplicitly]
-    private record MyRecord(int Value);
+    public record MyRecord(int Value);
 
     [UsedImplicitly]
-    private record struct MyRecordStruct(int Value);
+    public record struct MyRecordStruct(int Value);
 
     [UsedImplicitly]
-    private record struct MyRecordStructWithCustomPrintMembers(int Value)
+    public record struct MyRecordStructWithCustomPrintMembers(int Value)
     {
         // ReSharper disable once RedundantNameQualifier
         private bool PrintMembers(System.Text.StringBuilder builder)
@@ -217,7 +220,7 @@ public class TypeExtensionsSpecs
         }
     }
 
-    private record struct MyRecordStructWithOverriddenEquality(int Value)
+    public record struct MyRecordStructWithOverriddenEquality(int Value)
     {
         public bool Equals(MyRecordStructWithOverriddenEquality other) => Value == other.Value;
 
@@ -225,15 +228,15 @@ public class TypeExtensionsSpecs
     }
 
     [UsedImplicitly]
-    private readonly record struct MyReadonlyRecordStruct(int Value);
+    public readonly record struct MyReadonlyRecordStruct(int Value);
 
-    private struct MyStruct
+    internal struct MyStruct
     {
         [UsedImplicitly]
         public int Value { get; set; }
     }
 
-    private struct MyStructWithFakeCompilerGeneratedEquality : IEquatable<MyStructWithFakeCompilerGeneratedEquality>
+    public struct MyStructWithFakeCompilerGeneratedEquality : IEquatable<MyStructWithFakeCompilerGeneratedEquality>
     {
         [UsedImplicitly]
         public int Value { get; set; }
@@ -255,7 +258,7 @@ public class TypeExtensionsSpecs
     // Note that this struct is mistakenly detected as a record struct by the current version of TypeExtensions.IsRecord.
     // This cannot be avoided at present, unless something is changed at language level,
     // or a smarter way to check for record structs is found.
-    private struct MyStructWithFakeCompilerGeneratedEqualityAndPrintMembers
+    public struct MyStructWithFakeCompilerGeneratedEqualityAndPrintMembers
         : IEquatable<MyStructWithFakeCompilerGeneratedEqualityAndPrintMembers>
     {
         [UsedImplicitly]
@@ -283,7 +286,7 @@ public class TypeExtensionsSpecs
         }
     }
 
-    private struct MyStructWithOverriddenEquality : IEquatable<MyStructWithOverriddenEquality>
+    public struct MyStructWithOverriddenEquality : IEquatable<MyStructWithOverriddenEquality>
     {
         [UsedImplicitly]
         public int Value { get; set; }
@@ -301,7 +304,7 @@ public class TypeExtensionsSpecs
             !left.Equals(right);
     }
 
-    private class MyClass
+    public class MyClass
     {
         [UsedImplicitly]
         public int Value { get; set; }

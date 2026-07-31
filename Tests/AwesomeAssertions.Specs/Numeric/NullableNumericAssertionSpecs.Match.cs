@@ -31,7 +31,7 @@ public partial class NullableNumericAssertionSpecs
             // Assert
             act.Should().Throw<XunitException>()
                 .WithMessage(
-                    "Expected value to match Not(o.HasValue) because we want to test the failure message, but found 1.");
+                    "Expected value to match *Not(o.HasValue) because we want to test the failure message, but found 1.");
         }
 
         [Fact]

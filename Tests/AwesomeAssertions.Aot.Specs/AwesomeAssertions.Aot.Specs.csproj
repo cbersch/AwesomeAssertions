@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>AwesomeAssertions.Aot.Specs</RootNamespace>
     <AssemblyName>AwesomeAssertions.Aot.Specs</AssemblyName>
     <SignAssembly>True</SignAssembly>
@@ -39,17 +39,17 @@
     <Compile Include="../../Tests/AwesomeAssertions.Specs/FakeClock.cs" />
     <Compile Include="../../Tests/AwesomeAssertions.Specs/RandomDataExtensions.cs" />
     <Compile Include="../../Tests/AwesomeAssertions.Specs/TestTimer.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Common/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Collections/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Primitives/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Numeric/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Xml/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Exceptions/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Extensions/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Streams/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Configuration/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Execution/**/*.cs" />
-    <Compile Include="../../Tests/AwesomeAssertions.Specs/Formatting/**/*.cs" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Common/**/*.cs" LinkBase="Common" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Collections/**/*.cs" LinkBase="Collections" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Primitives/**/*.cs" LinkBase="Primitives" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Numeric/**/*.cs" LinkBase="Numeric" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Xml/**/*.cs" LinkBase="Xml" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Exceptions/**/*.cs" LinkBase="Exceptions" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Extensions/**/*.cs" LinkBase="Extensions" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Streams/**/*.cs" LinkBase="Streams" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Configuration/**/*.cs" LinkBase="Configuration" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Execution/**/*.cs" LinkBase="Execution" />
+    <Compile Include="../../Tests/AwesomeAssertions.Specs/Formatting/**/*.cs" LinkBase="Formatting" />
     <!-- Exclude problematic test files -->
     <Compile Remove="../../Tests/AwesomeAssertions.Specs/Common/CallerIdentifierSpecs.cs" />
     <Compile Remove="../../Tests/AwesomeAssertions.Specs/Common/TypeExtensionsSpecs.cs" />

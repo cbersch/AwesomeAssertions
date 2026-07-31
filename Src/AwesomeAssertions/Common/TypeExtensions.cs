@@ -362,10 +362,16 @@ internal static class TypeExtensions
             expectedType.IsAssignableFrom(actualType);
     }
 
-    public static MethodInfo GetExplicitConversionOperator(this Type type, Type sourceType, Type targetType) =>
+    public static MethodInfo GetExplicitConversionOperator(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+        this Type type,
+        Type sourceType, Type targetType) =>
         type.FindExplicitConversionOperator(sourceType, targetType);
 
-    public static MethodInfo GetImplicitConversionOperator(this Type type, Type sourceType, Type targetType) =>
+    public static MethodInfo GetImplicitConversionOperator(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
+        this Type type,
+        Type sourceType, Type targetType) =>
         type.FindImplicitConversionOperator(sourceType, targetType);
 
     public static bool HasValueSemantics(this Type type)

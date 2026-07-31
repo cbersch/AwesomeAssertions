@@ -84,7 +84,7 @@ public sealed class AssertionChain
     /// Either starts a new assertion chain, or, when <see cref="ReuseOnce"/> was called, for once, will return
     /// an existing instance.
     /// </summary>
-    public static AssertionChain GetOrCreate()
+    public static AssertionChain GetOrCreate(string subjectName = "")
     {
         if (Instance.Value != null)
         {
@@ -93,8 +93,11 @@ public sealed class AssertionChain
             return assertionChain;
         }
 
-        return new AssertionChain(() => AssertionScope.Current,
-            () => AwesomeAssertions.CallerIdentifier.DetermineCallerIdentity());
+        Func<string> callerIdentifierFunc = string.IsNullOrEmpty(subjectName)
+            ? AwesomeAssertions.CallerIdentifier.DetermineCallerIdentity
+            : () => subjectName;
+
+        return new AssertionChain(() => AssertionScope.Current, callerIdentifierFunc);
     }
 
     /// <summary>

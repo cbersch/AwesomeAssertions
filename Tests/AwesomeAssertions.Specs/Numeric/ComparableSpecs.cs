@@ -145,6 +145,7 @@ public class ComparableSpecs
 
     public class BeEquivalentTo
     {
+#if !AWESOME_ASSERTIONS_AOT
         [Fact]
         public void When_two_instances_are_equivalent_it_should_succeed()
         {
@@ -232,6 +233,8 @@ public class ComparableSpecs
                 .WithMessage(
                     "Expectation has property SomeOtherProperty that the other object does not have.*");
         }
+    }
+#endif
     }
 
     public class BeNull
