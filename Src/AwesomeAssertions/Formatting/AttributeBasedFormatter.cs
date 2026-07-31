@@ -12,6 +12,8 @@ namespace AwesomeAssertions.Formatting;
 /// Specialized value formatter that looks for static methods in the caller's assembly marked with the
 /// <see cref="ValueFormatterAttribute"/>.
 /// </summary>
+[RequiresDynamicCode("AttributeBasedFormatter scans assemblies at runtime and is not AOT-compatible.")]
+[RequiresUnreferencedCode("AttributeBasedFormatter scans assemblies at runtime and is not trim-compatible.")]
 public class AttributeBasedFormatter : IValueFormatter
 {
     private Dictionary<Type, MethodInfo> formatters;
@@ -81,10 +83,10 @@ public class AttributeBasedFormatter : IValueFormatter
         }
     }
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Intentional assembly scan guarded by class-level RequiresUnreferencedCode.")]
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2067", Justification = "Intentional assembly scan guarded by class-level RequiresUnreferencedCode.")]
     private static Dictionary<Type, MethodInfo> FindCustomFormatters()
     {
-#pragma warning disable IL2026, IL2067 // GetAllTypesFromAppDomain and custom attribute-based formatters require unreferenced code;
-                                       // this code path will silently produce no results if trimmed
         var query =
             from type in TypeReflector.GetAllTypesFromAppDomain(Applicable)
             where type is not null
@@ -95,7 +97,6 @@ public class AttributeBasedFormatter : IValueFormatter
             let methodParameters = method.GetParameters()
             where methodParameters.Length == 2
             select new { Type = methodParameters[0].ParameterType, Method = method }
-#pragma warning restore IL2026, IL2067
             into formatter
             group formatter by formatter.Type
             into formatterGroup

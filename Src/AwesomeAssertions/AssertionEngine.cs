@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Configuration;
@@ -84,6 +85,7 @@ public static class AssertionEngine
         }
     }
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Best-effort assembly scan for initializers; silently produces no results when trimmed.")]
     private static void ExecuteCustomInitializers()
     {
         var currentAssembly = Assembly.GetExecutingAssembly();
@@ -93,14 +95,12 @@ public static class AssertionEngine
 
         try
         {
-#pragma warning disable IL2026 // Assembly.GetReferencedAssemblies requires unreferenced code; best-effort attempt to find initializers
             attributes = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .Where(assembly => assembly != currentAssembly && !assembly.IsDynamic && !IsFramework(assembly))
                 .Where(a => a.GetReferencedAssemblies().Any(r => r.FullName == currentAssemblyName.FullName))
                 .SelectMany(a => a.GetCustomAttributes<AssertionEngineInitializerAttribute>())
                 .ToArray();
-#pragma warning restore IL2026
         }
         catch
         {

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using AwesomeAssertions.Common;
 using AwesomeAssertions.Equivalency.Execution;
 using AwesomeAssertions.Execution;
@@ -17,48 +19,63 @@ public static class Formatter
 
     private static readonly List<IValueFormatter> CustomFormatters = [];
 
-    private static readonly List<IValueFormatter> DefaultFormatters =
-    [
-        new XmlReaderValueFormatter(),
-        new XmlNodeFormatter(),
-        new AttributeBasedFormatter(),
-        new AggregateExceptionValueFormatter(),
-        new XDocumentValueFormatter(),
-        new XElementValueFormatter(),
-        new XAttributeValueFormatter(),
-        new PropertyInfoFormatter(),
-        new MethodInfoFormatter(),
-        new NullValueFormatter(),
-        new GuidValueFormatter(),
-        new DateTimeOffsetValueFormatter(),
+    private static readonly List<IValueFormatter> DefaultFormatters = BuildDefaultFormatters();
+
+    [UnconditionalSuppressMessage("AotAnalysis", "IL3050", Justification = "Reflection-based formatters only added when RuntimeFeature.IsDynamicCodeSupported.")]
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Reflection-based formatters only added when RuntimeFeature.IsDynamicCodeSupported.")]
+    private static List<IValueFormatter> BuildDefaultFormatters()
+    {
+        var formatters = new List<IValueFormatter>
+        {
+            new XmlReaderValueFormatter(),
+            new XmlNodeFormatter(),
+            new AggregateExceptionValueFormatter(),
+            new XDocumentValueFormatter(),
+            new XElementValueFormatter(),
+            new XAttributeValueFormatter(),
+            new PropertyInfoFormatter(),
+            new MethodInfoFormatter(),
+            new NullValueFormatter(),
+            new GuidValueFormatter(),
+            new DateTimeOffsetValueFormatter(),
 #if NET6_0_OR_GREATER
-        new DateOnlyValueFormatter(),
-        new TimeOnlyValueFormatter(),
+            new DateOnlyValueFormatter(),
+            new TimeOnlyValueFormatter(),
 #endif
-        new TimeSpanValueFormatter(),
-        new Int32ValueFormatter(),
-        new Int64ValueFormatter(),
-        new DoubleValueFormatter(),
-        new SingleValueFormatter(),
-        new DecimalValueFormatter(),
-        new ByteValueFormatter(),
-        new UInt32ValueFormatter(),
-        new UInt64ValueFormatter(),
-        new Int16ValueFormatter(),
-        new UInt16ValueFormatter(),
-        new SByteValueFormatter(),
-        new StringValueFormatter(),
-        new TaskFormatter(),
-        new PredicateLambdaExpressionValueFormatter(),
-        new ExpressionValueFormatter(),
-        new ExceptionValueFormatter(),
-        new MultidimensionalArrayFormatter(),
-        new DictionaryValueFormatter(),
-        new EnumerableValueFormatter(),
-        new EnumValueFormatter(),
-        new TypeValueFormatter(),
-        new DefaultValueFormatter(),
-    ];
+            new TimeSpanValueFormatter(),
+            new Int32ValueFormatter(),
+            new Int64ValueFormatter(),
+            new DoubleValueFormatter(),
+            new SingleValueFormatter(),
+            new DecimalValueFormatter(),
+            new ByteValueFormatter(),
+            new UInt32ValueFormatter(),
+            new UInt64ValueFormatter(),
+            new Int16ValueFormatter(),
+            new UInt16ValueFormatter(),
+            new SByteValueFormatter(),
+            new StringValueFormatter(),
+            new TaskFormatter(),
+            new ExpressionValueFormatter(),
+            new ExceptionValueFormatter(),
+            new MultidimensionalArrayFormatter(),
+            new DictionaryValueFormatter(),
+            new EnumerableValueFormatter(),
+            new EnumValueFormatter(),
+            new TypeValueFormatter(),
+        };
+
+#if NET5_0_OR_GREATER
+        if (RuntimeFeature.IsDynamicCodeSupported)
+#endif
+        {
+            formatters.Insert(2, new AttributeBasedFormatter());
+            formatters.Add(new PredicateLambdaExpressionValueFormatter());
+            formatters.Add(new DefaultValueFormatter());
+        }
+
+        return formatters;
+    }
 
     /// <summary>
     /// Is used to detect recursive calls by <see cref="IValueFormatter"/> implementations.

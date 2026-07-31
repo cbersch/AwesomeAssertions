@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -9,6 +10,7 @@ namespace AwesomeAssertions.Formatting;
 /// The <see cref="PredicateLambdaExpressionValueFormatter" /> is responsible for formatting
 /// boolean lambda expressions.
 /// </summary>
+[RequiresDynamicCode("PredicateLambdaExpressionValueFormatter compiles expression trees at runtime and is not AOT-compatible.")]
 public class PredicateLambdaExpressionValueFormatter : IValueFormatter
 {
     /// <inheritdoc />
@@ -38,6 +40,7 @@ public class PredicateLambdaExpressionValueFormatter : IValueFormatter
     /// E.g. "(_.Text == "two") AndAlso (_.Number == 3)"
     /// Instead of "(_.Text == value(AwesomeAssertions.Specs.Collections.GenericCollectionAssertionsSpecs+c__DisplayClass122_0).twoText) AndAlso (_.Number == 3)".
     /// </summary>
+    [UnconditionalSuppressMessage("AotAnalysis", "IL3050", Justification = "Expression compilation guarded by class-level RequiresDynamicCode.")]
     private static Expression ReduceConstantSubExpressions(Expression expression)
     {
         try

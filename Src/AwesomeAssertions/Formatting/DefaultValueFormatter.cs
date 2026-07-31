@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using AwesomeAssertions.Common;
@@ -9,6 +10,8 @@ namespace AwesomeAssertions.Formatting;
 /// <summary>
 /// The fallback formatter used to create a human-readable representation of any value for which no more specific formatter applies.
 /// </summary>
+[RequiresDynamicCode("DefaultValueFormatter uses reflection-based member enumeration and is not AOT-compatible.")]
+[RequiresUnreferencedCode("DefaultValueFormatter uses reflection-based member enumeration and is not trim-compatible.")]
 public class DefaultValueFormatter : IValueFormatter
 {
     /// <summary>

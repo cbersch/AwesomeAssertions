@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -147,6 +148,7 @@ internal static class TypeMetaDataExtensions
     /// <summary>
     /// Returns <see langword="true" /> if the type overrides the Equals method, or <see langword="false" /> otherwise.
     /// </summary>
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2070", Justification = "Intentional BindingFlags reflection; proper DynamicallyAccessedMembers annotation is deferred.")]
     public static bool OverridesEquals(this Type type)
     {
         MethodInfo method = type
@@ -270,6 +272,7 @@ internal static class TypeMetaDataExtensions
     /// <summary>
     /// Returns <see langword="true" /> if the type is a class record type; otherwise, <see langword="false" />.
     /// </summary>
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2070", Justification = "Intentional BindingFlags reflection; proper DynamicallyAccessedMembers annotation is deferred.")]
     public static bool IsRecordClass(this Type type)
     {
         return type.GetMethod("<Clone>$", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly) is { } &&
@@ -280,6 +283,7 @@ internal static class TypeMetaDataExtensions
     /// <summary>
     /// Return <see langword="true" /> if the type is a record struct; otherwise, <see langword="false" />
     /// </summary>
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2070", Justification = "Intentional BindingFlags reflection; proper DynamicallyAccessedMembers annotation is deferred.")]
     public static bool IsRecordStruct(this Type type)
     {
         // As noted here: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-10.0/record-structs#open-questions
@@ -734,6 +738,7 @@ internal sealed class Reflector(Type typeToReflect, MemberKind kind)
         }
     }
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2075", Justification = "Intentional BindingFlags reflection; proper DynamicallyAccessedMembers annotation is deferred.")]
     private static PropertyInfo[] LoadProperties(Type typeToReflect, MemberKind kind)
     {
         var selectedProperties = new OrderedPropertyCollection();
@@ -793,6 +798,7 @@ internal sealed class Reflector(Type typeToReflect, MemberKind kind)
     }
 
 #pragma warning disable AV1561
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2075", Justification = "Intentional BindingFlags reflection; proper DynamicallyAccessedMembers annotation is deferred.")]
     private static void AddInterfaceProperties(Type typeToReflect, MemberKind kind, BindingFlags flags, OrderedPropertyCollection selectedProperties)
     {
         if ((kind & MemberKind.DefaultInterfaceProperties) != MemberKind.None || typeToReflect.IsInterface)
@@ -813,6 +819,7 @@ internal sealed class Reflector(Type typeToReflect, MemberKind kind)
     }
 #pragma warning restore AV1561
 
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2075", Justification = "Intentional BindingFlags reflection; proper DynamicallyAccessedMembers annotation is deferred.")]
     private static FieldInfo[] LoadFields(Type typeToReflect, MemberKind kind)
     {
         var selectedFields = new List<FieldInfo>();
